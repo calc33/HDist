@@ -1,0 +1,25 @@
+BuildSum [<target-dir>] [options]
+BuildSumは<target-dir>で指定したディレクトリに含まれるファイルの
+MD5チェックサム一覧をchecksum.md5 という名前で生成する。
+<target-dir>を省略した場合はカレントディレクトリが対象
+
+Options:
+  --compress <compress-dir>
+  -c <compress-dir>
+      圧縮ファイルを格納するディレクトリ。
+      圧縮ファイルを使うことでネットワークの負荷を軽減できる。
+
+  --ignore <name>
+  -i <name>
+      一覧作成時に無視するファイル名/ディレクトリ名。ワイルドカードは使えない。
+      複数のファイル名を指定したい場合、このオプションを複数回指定する。
+      --ignore-listと排他的に使用する。
+
+  --ignore-list <filename>
+  -I <filename>
+      一覧作成時に無視するファイル名/ディレクトリ名の一覧を格納したファイルを指定する。
+      ワイルドカードは使えない。
+      --ignoreと排他的に使用する。
+
+  --help
+      このヘルプを表示

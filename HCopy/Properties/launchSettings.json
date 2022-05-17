@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HashCopy": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\Users\\baba\\Documents\\DevUtils.net\\HashCopy\\BuildHash\\bin\\Debug\\net5.0 D:\\Users\\baba\\Documents\\DevUtils.net\\HashCopy\\HashCopy\\test --compress ..\\bzip2"
+    }
+  }
+}
