@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BuildHash
+namespace BuildSum
 {
     class Program
     {

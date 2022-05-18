@@ -39,7 +39,7 @@ namespace HCopy.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HashCopy.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HCopy.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,8 +61,35 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   HashCopy &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///HashCopyはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
+        ///   (なし) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string EmptyText {
+            get {
+                return ResourceManager.GetString("EmptyText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   エラー に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string MessageBox_Error {
+            get {
+                return ResourceManager.GetString("MessageBox_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   コマンドラインオプションについて に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string MessageBox_Usage {
+            get {
+                return ResourceManager.GetString("MessageBox_Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   HCopyW &lt;source-dir&gt; &lt;destination-dir&gt; [options]
+        ///HCopyWはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
         ///
         ///Options:
         ///  --wait &lt;file&gt;
@@ -84,7 +111,7 @@ namespace HCopy.Properties {
         ///      &lt;source-dir&gt;からの相対パス指定可
         ///
         ///  --help
-        ///       [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      このヘル [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

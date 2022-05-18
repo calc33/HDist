@@ -1,5 +1,5 @@
-hcopy <source-dir> <destination-dir> [options]
-hcopyはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
+HCopyW <source-dir> <destination-dir> [options]
+HCopyWはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
 
 Options:
   --wait <file>

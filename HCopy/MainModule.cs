@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HashCore;
+using HDistCore;
 
-namespace HashCopy
+namespace HCopy
 {
     public class MainModule
     {
@@ -32,7 +32,6 @@ namespace HashCopy
 
         private void Log(LogStatus status, LogCategory category, string filename, string message)
         {
-            bool newline = true;
             TextWriter writer = Console.Out;
             switch (status)
             {
@@ -45,19 +44,15 @@ namespace HashCopy
                     writer = Console.Error;
                     break;
                 case LogStatus.Progress:
-                    newline = false;
+                    writer = null;
                     break;
                 default:
                     break;
             }
             string msg = LogResource.GetMessage(category, filename, message);
-            if (newline)
+            if (writer != null)
             {
                 writer.WriteLine(msg);
-            }
-            else
-            {
-                writer.Write(msg);
             }
             writer.Flush();
         }
@@ -66,34 +61,6 @@ namespace HashCopy
         {
             Log(e.Status, e.Category, e.FileName, e.Message);
         }
-
-        private void WaitLocked()
-        {
-            if (string.IsNullOrEmpty(WaitFile))
-            {
-                return;
-            }
-            string path = Path.Combine(DestinationDir, WaitFile);
-            if (!File.Exists(path))
-            {
-                return;
-            }
-            bool locked;
-            do
-            {
-                try
-                {
-                    using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) { }
-                    locked = false;
-                }
-                catch (IOException)
-                {
-                    locked = true;
-                    Thread.Sleep(100);
-                }
-            } while (locked);
-        }
-
         private void RunProgram()
         {
             if (string.IsNullOrEmpty(RunFile))
@@ -167,8 +134,8 @@ namespace HashCopy
         }
         public void Run()
         {
-            WaitLocked();
-            HashCore.FileList list = HashCore.FileList.LoadChecksum(SourceDir);
+            HDistCore.FileList list = HDistCore.FileList.LoadChecksum(SourceDir);
+            list.WaitUnlocked(DestinationDir, WaitFile);
             list.CompressedDirectory = CompressDir;
             list.Log += Checksum_Log;
             list.UpdateFiles(DestinationDir);

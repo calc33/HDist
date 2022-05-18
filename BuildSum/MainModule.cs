@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HashCore;
+using HDistCore;
 
-namespace BuildHash
+namespace BuildSum
 {
     public class MainModule
     {
@@ -17,7 +17,6 @@ namespace BuildHash
         private void Log(LogStatus status, LogCategory category, string filename, string message)
         {
             TextWriter writer = Console.Out;
-            bool newline = true;
             switch (status)
             {
                 case LogStatus.Information:
@@ -29,19 +28,15 @@ namespace BuildHash
                     writer = Console.Error;
                     break;
                 case LogStatus.Progress:
-                    newline = false;
+                    writer = null;
                     break;
                 default:
                     break;
             }
             string msg = LogResource.GetMessage(category, filename, message);
-            if (newline)
+            if (writer != null)
             {
                 writer.WriteLine(msg);
-            }
-            else
-            {
-                writer.Write(msg);
             }
         }
         private void FileList_Log(object sender, LogEventArgs e)

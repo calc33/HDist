@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BuildHash.Properties {
+namespace BuildSum.Properties {
     using System;
     
     

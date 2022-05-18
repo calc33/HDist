@@ -112,42 +112,22 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="LogFormatAborted" xml:space="preserve">
-    <value>中断しました。</value>
+  <data name="EmptyText" xml:space="preserve">
+    <value>(なし)</value>
   </data>
-  <data name="LogFormatCompressing" xml:space="preserve">
-    <value>{0}を圧縮中</value>
+  <data name="MessageBox_Error" xml:space="preserve">
+    <value>エラー</value>
   </data>
-  <data name="LogFormatCopy" xml:space="preserve">
-    <value>{0}をコピー中</value>
+  <data name="MessageBox_Usage" xml:space="preserve">
+    <value>コマンドラインオプションについて</value>
   </data>
-  <data name="LogFormatCopyCompressed" xml:space="preserve">
-    <value>{0}を圧縮コピー中</value>
-  </data>
-  <data name="LogFormatException" xml:space="preserve">
-    <value>{0}: {1}</value>
-  </data>
-  <data name="LogFormatFailToExtract" xml:space="preserve">
-    <value>{0}の圧縮コピーに失敗しました。通常コピーします。</value>
-  </data>
-  <data name="LogFormatFinished" xml:space="preserve">
-    <value>***終了***</value>
-  </data>
-  <data name="LogFormatNoMessage" xml:space="preserve">
-    <value>{0}</value>
-  </data>
-  <data name="LogFormatPaused" xml:space="preserve">
-    <value>一時停止</value>
-  </data>
-  <data name="LogFormatResumed" xml:space="preserve">
-    <value>再開</value>
-  </data>
-  <data name="LogFormatWaitLocked" xml:space="preserve">
-    <value>{0}の終了を待っています。</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Usage.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
 </root>

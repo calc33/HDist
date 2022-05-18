@@ -5,10 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace HashCore
+namespace HDistCore
 {
     public class FileList: IEnumerable<FileList.FileEntry>
     {
@@ -129,6 +130,7 @@ namespace HashCore
 
             public void UpdateFile(string destinationDirectory)
             {
+                OnLog(LogStatus.Progress, LogCategory.NoMessage, null);
                 if (!IsModified(destinationDirectory))
                 {
                     return;
@@ -192,6 +194,13 @@ namespace HashCore
         private List<FileEntry> _list = new List<FileEntry>();
         private Dictionary<string, FileEntry> _nameToEntry = new Dictionary<string, FileEntry>();
 
+        private bool _aborting = false;
+        private bool _pausing = false;
+        
+        public bool Aborting { get { return _aborting; } }
+        
+        public bool Pausing { get { return _pausing; } }
+
         public event EventHandler<LogEventArgs> Log;
 
         public void OnLog(LogEventArgs e)
@@ -237,9 +246,74 @@ namespace HashCore
 
         public void UpdateFiles(string destinationDirectory)
         {
+            _aborting = false;
+            _pausing = false;
             foreach (FileEntry entry in _list)
             {
                 entry.UpdateFile(destinationDirectory);
+                if (_pausing)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
+                    while (_pausing && !_aborting)
+                    {
+                        Thread.Sleep(100);
+                    }
+                }
+                if (_aborting)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
+                    break;
+                }
+            }
+        }
+
+        public void Abort()
+        {
+            _aborting = true;
+        }
+
+        public void Pause()
+        {
+            _pausing = true;
+        }
+
+        public void Resume()
+        {
+            _pausing = false;
+        }
+
+        private bool IsWritable(string path)
+        {
+            if (!File.Exists(path))
+            {
+                return true;
+            }
+            try
+            {
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) { }
+                return true;
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
+        public void WaitUnlocked(string directory, string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+            {
+                return;
+            }
+            string path = Path.Combine(directory, filename);
+            if (IsWritable(path))
+            {
+                return;
+            }
+            OnLog(new LogEventArgs(LogStatus.Information, LogCategory.WaitLocked, filename, null));
+            while (!IsWritable(path))
+            {
+                Thread.Sleep(100);
             }
         }
 

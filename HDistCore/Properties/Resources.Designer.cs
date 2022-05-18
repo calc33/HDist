@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace HashCore.Properties {
+namespace HDistCore.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace HashCore.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HashCore.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HDistCore.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,6 +57,15 @@ namespace HashCore.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   中断しました。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatAborted {
+            get {
+                return ResourceManager.GetString("LogFormatAborted", resourceCulture);
             }
         }
         
@@ -102,6 +111,51 @@ namespace HashCore.Properties {
         internal static string LogFormatFailToExtract {
             get {
                 return ResourceManager.GetString("LogFormatFailToExtract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ***終了*** に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatFinished {
+            get {
+                return ResourceManager.GetString("LogFormatFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatNoMessage {
+            get {
+                return ResourceManager.GetString("LogFormatNoMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   一時停止 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatPaused {
+            get {
+                return ResourceManager.GetString("LogFormatPaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   再開 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatResumed {
+            get {
+                return ResourceManager.GetString("LogFormatResumed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}の終了を待っています。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatWaitLocked {
+            get {
+                return ResourceManager.GetString("LogFormatWaitLocked", resourceCulture);
             }
         }
     }

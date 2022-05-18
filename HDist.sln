@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildSum", "BuildSum\BuildS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDistCore", "HDistCore\HDistCore.csproj", "{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCopyW", "HCopyW\HCopyW.csproj", "{3400C4FB-8F19-4056-B744-49C22858D3EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

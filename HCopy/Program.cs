@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace HashCopy
+namespace HCopy
 {
     class Program
     {

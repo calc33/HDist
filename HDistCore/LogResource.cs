@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HashCore
+namespace HDistCore
 {
     public enum LogStatus
     {
@@ -19,7 +19,13 @@ namespace HashCore
         Copy,
         CopyCompressed,
         FailToExtract,
-        Compressing
+        Compressing,
+        NoMessage,
+        WaitLocked,
+        Aborted,
+        Paused,
+        Resumed,
+        Finished,
     }
     public class LogEventArgs : EventArgs
     {
@@ -44,7 +50,13 @@ namespace HashCore
             { LogCategory.Copy, Properties.Resources.LogFormatCopy },
             { LogCategory.CopyCompressed, Properties.Resources.LogFormatCopyCompressed },
             { LogCategory.FailToExtract, Properties.Resources.LogFormatFailToExtract },
-            { LogCategory.Compressing, Properties.Resources.LogFormatCopyCompressed }
+            { LogCategory.Compressing, Properties.Resources.LogFormatCopyCompressed },
+            { LogCategory.NoMessage, Properties.Resources.LogFormatNoMessage },
+            { LogCategory.WaitLocked, Properties.Resources.LogFormatWaitLocked },
+            { LogCategory.Aborted, Properties.Resources.LogFormatAborted },
+            { LogCategory.Paused, Properties.Resources.LogFormatPaused },
+            { LogCategory.Resumed, Properties.Resources.LogFormatResumed },
+            { LogCategory.Finished, Properties.Resources.LogFormatFinished },
         };
 
         public static string GetMessageFormat(LogCategory category)
