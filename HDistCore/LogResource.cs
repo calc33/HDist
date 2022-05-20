@@ -26,6 +26,7 @@ namespace HDistCore
         Paused,
         Resumed,
         Finished,
+        SuppressUpdating,
     }
     public class LogEventArgs : EventArgs
     {
@@ -57,6 +58,7 @@ namespace HDistCore
             { LogCategory.Paused, Properties.Resources.LogFormatPaused },
             { LogCategory.Resumed, Properties.Resources.LogFormatResumed },
             { LogCategory.Finished, Properties.Resources.LogFormatFinished },
+            { LogCategory.SuppressUpdating, Properties.Resources.LogFormatSuppressUpdating },
         };
 
         public static string GetMessageFormat(LogCategory category)

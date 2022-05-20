@@ -115,7 +115,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   ***終了*** に類似しているローカライズされた文字列を検索します。
+        ///   ***終了しました*** に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatFinished {
             get {
@@ -147,6 +147,15 @@ namespace HDistCore.Properties {
         internal static string LogFormatResumed {
             get {
                 return ResourceManager.GetString("LogFormatResumed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   更新禁止に設定されています。 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatSuppressUpdating {
+            get {
+                return ResourceManager.GetString("LogFormatSuppressUpdating", resourceCulture);
             }
         }
         

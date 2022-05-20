@@ -13,7 +13,8 @@ namespace HDistCore
 {
     public class FileList: IEnumerable<FileList.FileEntry>
     {
-        private const string CHECKSUM = "checksum.md5";
+        private const string CHECKSUM_FILE = "_checksum.sha";
+        private const string UPDATED_FILE = "_updated";
         public class FileEntry : IComparable
         {
             private FileList _owner;
@@ -27,12 +28,12 @@ namespace HDistCore
                 {
                     return null;
                 }
-                MD5 md5 = MD5.Create();
+                SHA1 sha = SHA1.Create();
                 using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    md5.ComputeHash(stream);
+                    sha.ComputeHash(stream);
                 }
-                return Convert.ToBase64String(md5.Hash);
+                return Convert.ToBase64String(sha.Hash);
             }
 
             public bool IsModified(string directory)
@@ -191,6 +192,10 @@ namespace HDistCore
         public string FileName { get; set; }
         public string BaseDirectory { get; set; }
         public string CompressedDirectory { get; set; }
+        /// <summary>
+        /// _checksum.sha のSHA1チェックサム値
+        /// </summary>
+        public byte[] Checksum { get; }
         private List<FileEntry> _list = new List<FileEntry>();
         private Dictionary<string, FileEntry> _nameToEntry = new Dictionary<string, FileEntry>();
 
@@ -220,7 +225,7 @@ namespace HDistCore
 
         public void SaveChecksum()
         {
-            SaveToFile(Path.Combine(BaseDirectory, CHECKSUM));
+            SaveToFile(Path.Combine(BaseDirectory, CHECKSUM_FILE));
         }
 
         public void SaveToFile(string filename)
@@ -244,6 +249,24 @@ namespace HDistCore
             }
         }
 
+        public static bool IsDisabled(string destinationDirectory)
+        {
+            string path = Path.Combine(destinationDirectory, UPDATED_FILE);
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                return false;
+            }
+            using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+            {
+                string s = reader.ReadToEnd();
+                if (!string.IsNullOrEmpty(s))
+                {
+                    s = s.TrimEnd();
+                }
+                return (s == "-" || s == "noupdate");
+            }
+        }
+
         public void UpdateFiles(string destinationDirectory)
         {
             _aborting = false;
@@ -262,7 +285,15 @@ namespace HDistCore
                 if (_aborting)
                 {
                     OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
-                    break;
+                    return;
+                }
+            }
+            if (!_aborting)
+            {
+                string path = Path.Combine(destinationDirectory, UPDATED_FILE);
+                using (StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8))
+                {
+                    writer.Write(Convert.ToBase64String(Checksum));
                 }
             }
         }
@@ -337,6 +368,11 @@ namespace HDistCore
                     }
                 }
             }
+            SHA1 sha = SHA1.Create();
+            using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            {
+                Checksum = sha.ComputeHash(stream);
+            }
         }
         
         private void EnumFiles(string directory, Dictionary<string, bool> ignoreNames)
@@ -373,9 +409,10 @@ namespace HDistCore
             {
                 ignoreDict[Treat(s)] = true;
             }
-            ignoreDict[Treat(CHECKSUM)] = true;
+            ignoreDict[Treat(CHECKSUM_FILE)] = true;
             EnumFiles(baseDir, ignoreDict);
             _list.Sort();
+            Checksum = new byte[0];
         }
 
         public static FileList CreateByDirectory(string directory, IList<string> ignoreNames)
@@ -385,7 +422,7 @@ namespace HDistCore
 
         public static FileList LoadChecksum(string directory)
         {
-            return LoadFromFile(directory, Path.Combine(directory, CHECKSUM));
+            return LoadFromFile(directory, Path.Combine(directory, CHECKSUM_FILE));
         }
         public static FileList LoadFromFile(string directory, string filename)
         {

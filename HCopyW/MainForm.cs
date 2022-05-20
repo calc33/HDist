@@ -382,12 +382,24 @@ namespace HCopy
 
         public void Run()
         {
-            _executingFileList = FileList.LoadChecksum(SourceDir);
-            _executingFileList.WaitUnlocked(DestinationDir, WaitFile);
-            _executingFileList.CompressedDirectory = CompressDir;
-            _executingFileList.Log += FileList_Log;
-            _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(DestinationDir); EndThread(); });
-            UpdateButtonPauseText();
+            try
+            {
+                if (FileList.IsDisabled(DestinationDir))
+                {
+                    Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
+                    StartAutoQuit();
+                    return;
+                }
+                _executingFileList = FileList.LoadChecksum(SourceDir);
+                _executingFileList.WaitUnlocked(DestinationDir, WaitFile);
+                _executingFileList.CompressedDirectory = CompressDir;
+                _executingFileList.Log += FileList_Log;
+                _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(DestinationDir); EndThread(); });
+            }
+            finally
+            {
+                UpdateButtonPauseText();
+            }
         }
 
         public MainForm()

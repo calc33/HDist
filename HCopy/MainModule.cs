@@ -134,12 +134,23 @@ namespace HCopy
         }
         public void Run()
         {
-            HDistCore.FileList list = HDistCore.FileList.LoadChecksum(SourceDir);
-            list.WaitUnlocked(DestinationDir, WaitFile);
-            list.CompressedDirectory = CompressDir;
-            list.Log += Checksum_Log;
-            list.UpdateFiles(DestinationDir);
-            RunProgram();
+            try
+            {
+                if (FileList.IsDisabled(DestinationDir))
+                {
+                    Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
+                    return;
+                }
+                HDistCore.FileList list = HDistCore.FileList.LoadChecksum(SourceDir);
+                list.WaitUnlocked(DestinationDir, WaitFile);
+                list.CompressedDirectory = CompressDir;
+                list.Log += Checksum_Log;
+                list.UpdateFiles(DestinationDir);
+            }
+            finally
+            {
+                RunProgram();
+            }
         }
     }
 }

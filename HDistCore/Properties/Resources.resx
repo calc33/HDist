@@ -136,7 +136,7 @@
     <value>{0}の圧縮コピーに失敗しました。通常コピーします。</value>
   </data>
   <data name="LogFormatFinished" xml:space="preserve">
-    <value>***終了***</value>
+    <value>***終了しました***</value>
   </data>
   <data name="LogFormatNoMessage" xml:space="preserve">
     <value>{0}</value>
@@ -146,6 +146,9 @@
   </data>
   <data name="LogFormatResumed" xml:space="preserve">
     <value>再開</value>
+  </data>
+  <data name="LogFormatSuppressUpdating" xml:space="preserve">
+    <value>更新禁止に設定されています。</value>
   </data>
   <data name="LogFormatWaitLocked" xml:space="preserve">
     <value>{0}の終了を待っています。</value>
