@@ -114,7 +114,7 @@ namespace HCopy
                         default:
                             if (a.StartsWith("-"))
                             {
-                                Error(string.Format("不明なオプション: {0}", a));
+                                Error(string.Format(Properties.Resources.InvalidOptionFmt, a));
                             }
                             paths.Add(a);
                             break;
@@ -122,15 +122,23 @@ namespace HCopy
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Error(string.Format("{0}に続くパラメータがありません", a));
+                    Error(string.Format(Properties.Resources.ParameterRequiedFmt, a));
                 }
             }
-            if (paths.Count != 2)
+            switch (paths.Count)
             {
-                ShowUsage();
+                case 1:
+                    SourceDir = paths[0];
+                    DestinationDir = Directory.GetCurrentDirectory();
+                    break;
+                case 2:
+                    SourceDir = paths[0];
+                    DestinationDir = paths[1];
+                    break;
+                default:
+                    ShowUsage();
+                    break;
             }
-            SourceDir = paths[0];
-            DestinationDir = paths[1];
         }
         public void Run()
         {

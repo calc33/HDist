@@ -137,6 +137,7 @@ namespace HDistCore
                     return;
                 }
                 CopyFile(destinationDirectory);
+                return;
             }
 
             private void OnLog(LogStatus status, LogCategory category, string message)
@@ -269,11 +270,20 @@ namespace HDistCore
 
         public void UpdateFiles(string destinationDirectory)
         {
+            bool success = false;
             _aborting = false;
             _pausing = false;
             foreach (FileEntry entry in _list)
             {
-                entry.UpdateFile(destinationDirectory);
+                try
+                {
+                    entry.UpdateFile(destinationDirectory);
+                }
+                catch (Exception t)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, entry.FileName, t.Message));
+                    success = false;
+                }
                 if (_pausing)
                 {
                     OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
@@ -284,17 +294,32 @@ namespace HDistCore
                 }
                 if (_aborting)
                 {
+                    success = false;
                     OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
-                    return;
+                    break;
                 }
             }
-            if (!_aborting)
+            try
             {
                 string path = Path.Combine(destinationDirectory, UPDATED_FILE);
-                using (StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8))
+                if (success)
                 {
-                    writer.Write(Convert.ToBase64String(Checksum));
+                    using (StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8))
+                    {
+                        writer.Write(Convert.ToBase64String(Checksum));
+                    }
                 }
+                else
+                {
+                    if (File.Exists(path))
+                    {
+                        File.Delete(path);
+                    }
+                }
+            }
+            catch (Exception t)
+            {
+                OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, UPDATED_FILE, t.Message));
             }
         }
 

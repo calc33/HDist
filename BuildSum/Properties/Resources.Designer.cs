@@ -39,7 +39,7 @@ namespace BuildSum.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BuildHash.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BuildSum.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,8 +61,35 @@ namespace BuildSum.Properties {
         }
         
         /// <summary>
-        ///   BuildHash [&lt;target-dir&gt;] [options]
-        ///BuildHashは&lt;target-dir&gt;で指定したディレクトリに含まれるファイルの
+        ///   --ignore-listを複数指定できません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Error_MultipleOption {
+            get {
+                return ResourceManager.GetString("Error_MultipleOption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   --ignoreと--ignore-listを同時に指定できません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string Error_OptionConfliected {
+            get {
+                return ResourceManager.GetString("Error_OptionConfliected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}に続くパラメータがありません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParameterRequiedFmt {
+            get {
+                return ResourceManager.GetString("ParameterRequiedFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   BuildSum [&lt;target-dir&gt;] [options]
+        ///BuildSumは&lt;target-dir&gt;で指定したディレクトリに含まれるファイルの
         ///MD5チェックサム一覧をchecksum.md5 という名前で生成する。
         ///&lt;target-dir&gt;を省略した場合はカレントディレクトリが対象
         ///
@@ -80,7 +107,7 @@ namespace BuildSum.Properties {
         ///
         ///  --ignore-list &lt;filename&gt;
         ///  -I &lt;filename&gt;
-        ///      一覧作成時に無視するファイル名/ディレクトリ名の一覧を格納し [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      一覧作成時に無視するファイル名/ディレクトリ名の一覧を格納したフ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

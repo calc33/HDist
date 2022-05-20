@@ -72,7 +72,7 @@ namespace BuildSum
                         case "-i":
                             if (ignorePath != null)
                             {
-                                Error("--ignoreと--ignore-listを同時に指定できません");
+                                Error(Properties.Resources.Error_OptionConfliected);
                             }
                             i++;
                             IgnoreFiles.Add(args[i]);
@@ -81,11 +81,11 @@ namespace BuildSum
                         case "-I":
                             if (ignorePath != null)
                             {
-                                Error("--ignore-listを複数指定できません");
+                                Error(Properties.Resources.Error_MultipleOption);
                             }
                             if (IgnoreFiles.Count != 0)
                             {
-                                Error("--ignoreと--ignore-listを同時に指定できません");
+                                Error(Properties.Resources.Error_OptionConfliected);
                             }
                             i++;
                             ignorePath = args[i];
@@ -104,7 +104,7 @@ namespace BuildSum
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Error(string.Format("{0}に続くパラメータがありません", a));
+                    Error(string.Format(Properties.Resources.ParameterRequiedFmt, a));
                 }
             }
             string dir = Directory.GetCurrentDirectory();

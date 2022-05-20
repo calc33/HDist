@@ -39,7 +39,7 @@ namespace HCopy.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HashCopy.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("HCopy.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,8 +61,26 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   HashCopy &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///HashCopyはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
+        ///   不明なオプション: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidOptionFmt {
+            get {
+                return ResourceManager.GetString("InvalidOptionFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}に続くパラメータがありません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParameterRequiedFmt {
+            get {
+                return ResourceManager.GetString("ParameterRequiedFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   hcopy &lt;source-dir&gt; &lt;destination-dir&gt; [options]
+        ///hcopyはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
         ///
         ///Options:
         ///  --wait &lt;file&gt;
@@ -84,7 +102,7 @@ namespace HCopy.Properties {
         ///      &lt;source-dir&gt;からの相対パス指定可
         ///
         ///  --help
-        ///       [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      このヘルプを [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

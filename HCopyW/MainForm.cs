@@ -78,6 +78,96 @@ namespace HCopy
             }
         }
 
+        private string _logFile = null;
+        private string _actualLogFile = null;
+        private TextWriter _logWriter = null;
+        private int _processId;
+        private static Dictionary<char, string> ParamCharToValue = new Dictionary<char, string>()
+        {
+            {'Y', DateTime.Today.Year.ToString("D4") },
+            {'M', DateTime.Today.Month.ToString("D2") },
+            {'D', DateTime.Today.Day.ToString("D2") },
+            {'H', DateTime.Now.Hour.ToString("D2") },
+            {'N', DateTime.Now.Minute.ToString("D2") },
+            {'S', DateTime.Now.Second.ToString("D2") },
+            {'P', Process.GetCurrentProcess().Id.ToString() },
+            {'%', "%" },
+        };
+        private void UpdateActualLogFile()
+        {
+            StringBuilder buf = new StringBuilder();
+            if (string.IsNullOrEmpty(_logFile))
+            {
+                _actualLogFile = null;
+            }
+            bool wasPercent = false;
+            foreach (char c in _logFile)
+            {
+                if (wasPercent)
+                {
+                    string s;
+                    if (ParamCharToValue.TryGetValue(char.ToUpper(c), out s))
+                    {
+                        buf.Append(s);
+                    }
+                    else
+                    {
+                        buf.Append('%');
+                        buf.Append(c);
+                    }
+                    wasPercent = false;
+                    continue;
+                }
+                if (c == '%')
+                {
+                    wasPercent = true;
+                }
+                else
+                {
+                    wasPercent = false;
+                    buf.Append(c);
+                }
+            }
+            _actualLogFile = buf.ToString();
+        }
+        
+        private void UpdateLogStream()
+        {
+            if (_logWriter != null)
+            {
+                _logWriter.Dispose();
+                _logWriter = null;
+            }
+            if (string.IsNullOrEmpty(_actualLogFile))
+            {
+                return;
+            }
+            string dir = Path.GetDirectoryName(_actualLogFile);
+            if (!string.IsNullOrEmpty(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            _logWriter = new StreamWriter(new FileStream(_actualLogFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8);
+            Process p = Process.GetCurrentProcess();
+            _processId = p.Id;
+            _logWriter.WriteLine(string.Format("[{0:HH:mm:ss}({1})] Start {2} {3}", DateTime.Now, _processId, p.StartInfo.FileName, p.StartInfo.Arguments));
+        }
+
+        public string LogFile
+        {
+            get { return _logFile; }
+            set
+            {
+                if (_logFile == value)
+                {
+                    return;
+                }
+                _logFile = value;
+                UpdateActualLogFile();
+                UpdateLogStream();
+            }
+        }
+
         private static string DisplayText(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -118,6 +208,7 @@ namespace HCopy
             }
             textBoxLog.Select(textBoxLog.Text.Length, 0);
             textBoxLog.ScrollToCaret();
+            _logWriter?.Flush();
         }
 
         private bool _quitOnFinish = false;
@@ -145,12 +236,12 @@ namespace HCopy
             {
                 int sec = (int)(_autoQuitTime - DateTime.Now).TotalSeconds;
                 sec = Math.Max(0, sec);
-                buttonQuit.Text = string.Format("終了中断({0})", sec);
+                buttonQuit.Text = string.Format(Properties.Resources.ButtonQuit_AutoQuitFmt, sec);
                 buttonQuit.Tag = 1;
             }
             else
             {
-                buttonQuit.Text = "終了";
+                buttonQuit.Text = Properties.Resources.ButtonQuit_Quit;
                 buttonQuit.Tag = 0;
             }
         }
@@ -158,7 +249,7 @@ namespace HCopy
         private void UpdateButtonPauseText()
         {
             buttonPause.Enabled = (_executingTask != null && !_executingTask.IsCompleted);
-            buttonPause.Text = (_executingFileList != null && _executingFileList.Pausing) ? "再開" : "中断";
+            buttonPause.Text = (_executingFileList != null && _executingFileList.Pausing) ? Properties.Resources.ButtonPause_Resume : Properties.Resources.ButtonPause_Pause;
         }
 
         private void DelayedUpdateButtonText()
@@ -231,6 +322,7 @@ namespace HCopy
                 NativeMethods.PostMessage(Handle, UM_LOG, IntPtr.Zero, IntPtr.Zero);
                 _umLogPosted = true;
             }
+            _logWriter?.WriteLine(string.Format("[{0:HH:mm:ss}({1})] {2}", DateTime.Now, _processId, message));
         }
 
         private void SetStatusText(string text)
@@ -340,13 +432,18 @@ namespace HCopy
                             i++;
                             CompressDir = args[i];
                             break;
+                        case "--log":
+                        case "-l":
+                            i++;
+                            LogFile = args[i];
+                            break;
                         case "--help":
                             ShowUsage();
                             break;
                         default:
                             if (a.StartsWith("-"))
                             {
-                                Error(string.Format("不明なオプション: {0}", a));
+                                Error(string.Format(Properties.Resources.InvalidOptionFmt, a));
                             }
                             paths.Add(a);
                             break;
@@ -354,15 +451,23 @@ namespace HCopy
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    Error(string.Format("{0}に続くパラメータがありません", a));
+                    Error(string.Format(Properties.Resources.ParameterRequiedFmt, a));
                 }
             }
-            if (paths.Count != 2)
+            switch (paths.Count)
             {
-                ShowUsage();
+                case 1:
+                    SourceDir = paths[0];
+                    DestinationDir = Directory.GetCurrentDirectory();
+                    break;
+                case 2:
+                    SourceDir = paths[0];
+                    DestinationDir = paths[1];
+                    break;
+                default:
+                    ShowUsage();
+                    break;
             }
-            SourceDir = paths[0];
-            DestinationDir = paths[1];
         }
 
         private void StartThread()

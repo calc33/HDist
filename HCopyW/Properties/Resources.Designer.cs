@@ -61,11 +61,56 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
+        ///   中断 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ButtonPause_Pause {
+            get {
+                return ResourceManager.GetString("ButtonPause_Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   再開 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ButtonPause_Resume {
+            get {
+                return ResourceManager.GetString("ButtonPause_Resume", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   終了中断({0}) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ButtonQuit_AutoQuitFmt {
+            get {
+                return ResourceManager.GetString("ButtonQuit_AutoQuitFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   終了 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ButtonQuit_Quit {
+            get {
+                return ResourceManager.GetString("ButtonQuit_Quit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   (なし) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string EmptyText {
             get {
                 return ResourceManager.GetString("EmptyText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   不明なオプション: {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string InvalidOptionFmt {
+            get {
+                return ResourceManager.GetString("InvalidOptionFmt", resourceCulture);
             }
         }
         
@@ -84,6 +129,15 @@ namespace HCopy.Properties {
         internal static string MessageBox_Usage {
             get {
                 return ResourceManager.GetString("MessageBox_Usage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}に続くパラメータがありません に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParameterRequiedFmt {
+            get {
+                return ResourceManager.GetString("ParameterRequiedFmt", resourceCulture);
             }
         }
         
@@ -110,8 +164,8 @@ namespace HCopy.Properties {
         ///      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する
         ///      &lt;source-dir&gt;からの相対パス指定可
         ///
-        ///  --help
-        ///      このヘル [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///  --log &lt;file&gt;
+        ///  -l [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {
