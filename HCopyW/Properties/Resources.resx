@@ -145,7 +145,7 @@
     <value>エラー</value>
   </data>
   <data name="MessageBox_Usage" xml:space="preserve">
-    <value>コマンドラインオプションについて</value>
+    <value>HCopyW</value>
   </data>
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>{0}に続くパラメータがありません</value>

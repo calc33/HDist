@@ -330,7 +330,8 @@ namespace HCopy
 
         private void ShowUsage()
         {
-            MessageBox.Show(this, Properties.Resources.Usage, Properties.Resources.MessageBox_Usage, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(this, Properties.Resources.Usage, Properties.Resources.MessageBox_Usage, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Application.Exit();
         }
 
         private void Error(string message)
@@ -468,6 +469,7 @@ namespace HCopy
                         case "--help":
                         case "/?":
                             ShowUsage();
+
                             break;
                         default:
                             if (a.StartsWith("-"))

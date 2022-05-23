@@ -142,7 +142,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   コマンドラインオプションについて に類似しているローカライズされた文字列を検索します。
+        ///   HCopyW に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string MessageBox_Usage {
             get {
@@ -166,7 +166,7 @@ namespace HCopy.Properties {
         ///Options:
         ///  --wait &lt;file&gt;
         ///  -w &lt;file&gt;
-        ///      指定したファイルの書き込みロックが解除されるまで待ってからコピーを開始する。
+        ///      &lt;file&gt;の書き込みロックが解除されるまで待ってからコピーを開始する
         ///
         ///  --run &lt;executable&gt;
         ///  -r &lt;executable&gt;
@@ -180,10 +180,9 @@ namespace HCopy.Properties {
         ///  --compress &lt;directory&gt;
         ///  -c &lt;directory&gt;
         ///      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する
-        ///      &lt;source-dir&gt;からの相対パス指定可
+        ///      相対パスで指定した場合は&lt;source-dir&gt;からの相対パスになる
         ///
-        ///  --log &lt;file&gt;
-        ///  - [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///  --log &lt;f [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {
