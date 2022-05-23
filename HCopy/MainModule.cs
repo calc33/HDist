@@ -110,6 +110,7 @@ namespace HCopy
                             CompressDir = args[i];
                             break;
                         case "--help":
+                        case "/?":
                             ShowUsage(0);
                             return;
                         default:

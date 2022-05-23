@@ -4,7 +4,7 @@ HCopyWはsource-dirから _checksum.sha に列挙されたファイルをコピーする。
 Options:
   --wait <file>
   -w <file>
-      指定したファイルの書き込みロックが解除されるまで待ってからコピーを開始する。
+      <file>の書き込みロックが解除されるまで待ってからコピーを開始する
 
   --run <executable>
   -r <executable>
@@ -18,7 +18,7 @@ Options:
   --compress <directory>
   -c <directory>
       コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する
-      <source-dir>からの相対パス指定可
+      相対パスで指定した場合は<source-dir>からの相対パスになる
 
   --log <file>
   -l <file>
@@ -33,4 +33,5 @@ Options:
         %P プロセスID
 
   --help
+  /?
       このヘルプを表示

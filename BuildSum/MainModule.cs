@@ -91,6 +91,7 @@ namespace BuildSum
                             ignorePath = args[i];
                             break;
                         case "--help":
+                        case "/?":
                             ShowUsage();
                             break;
                         default:

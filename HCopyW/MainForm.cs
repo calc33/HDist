@@ -466,6 +466,7 @@ namespace HCopy
                             LogFile = args[i];
                             break;
                         case "--help":
+                        case "/?":
                             ShowUsage();
                             break;
                         default:

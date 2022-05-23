@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -336,42 +337,91 @@ namespace HDistCore
             }
         }
         
-        private void EnumFiles(string directory, Dictionary<string, bool> ignoreNames)
+        private void EnumFiles(string directory, List<Regex> ignoreNames)
         {
             foreach (string s in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
             {
                 string path1 = Path.GetRelativePath(BaseDirectory, s);
                 string path2 = Path.GetFileName(s);
-                if (ignoreNames.ContainsKey(Treat(path1)) || ignoreNames.ContainsKey(Treat(path2)))
+                bool ignore = false;
+                foreach (Regex regex in ignoreNames)
                 {
-                    continue;
+                    if (regex.Match(Treat(path1)).Success || regex.Match(Treat(path2)).Success)
+                    {
+                        ignore = true;
+                        break;
+                    }
                 }
-                _list.Add(new FileEntry(this, path1));
+                if (!ignore)
+                {
+                    _list.Add(new FileEntry(this, path1));
+                }
             }
             foreach (string s in Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly))
             {
                 string path1 = Path.GetRelativePath(BaseDirectory, s);
                 string path2 = Path.GetFileName(s);
-                if (ignoreNames.ContainsKey(Treat(path1)) || ignoreNames.ContainsKey(Treat(path2)))
+                bool ignore = false;
+                foreach (Regex regex in ignoreNames)
                 {
-                    continue;
+                    if (regex.Match(Treat(path1)).Success || regex.Match(Treat(path2)).Success)
+                    {
+                        ignore = true;
+                        break;
+                    }
                 }
-                EnumFiles(s, ignoreNames);
+                if (!ignore)
+                {
+                    EnumFiles(s, ignoreNames);
+                }
             }
             InvalidateNameToEntry();
+        }
+
+        private static Regex ToRegex(string wildcard)
+        {
+            StringBuilder buf = new StringBuilder();
+            buf.Append('^');
+            foreach (char c in wildcard)
+            {
+                switch (c)
+                {
+                    case '*':
+                        buf.Append(".*");
+                        break;
+                    case '?':
+                        buf.Append(".");
+                        break;
+                    case '$':
+                    case '(':
+                    case '+':
+                    case '.':
+                    case '[':
+                    case '^':
+                    case '{':
+                        buf.Append('\\');
+                        buf.Append(c);
+                        break;
+                    default:
+                        buf.Append(c);
+                        break;
+                }
+            }
+            buf.Append('$');
+            return new Regex(buf.ToString());
         }
 
         internal FileList(string baseDir, IList<string> ignoreNames)
         {
             FileName = null;
             BaseDirectory = baseDir;
-            Dictionary<string, bool> ignoreDict = new Dictionary<string, bool>(ignoreNames.Count);
+            List<Regex> ignores = new List<Regex>(ignoreNames.Count);
             foreach (string s in ignoreNames)
             {
-                ignoreDict[Treat(s)] = true;
+                ignores.Add(ToRegex(s));
             }
-            ignoreDict[Treat(CHECKSUM_FILE)] = true;
-            EnumFiles(baseDir, ignoreDict);
+            ignores.Add(ToRegex(CHECKSUM_FILE));
+            EnumFiles(baseDir, ignores);
             _list.Sort();
             Checksum = new byte[0];
         }
