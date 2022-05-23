@@ -115,6 +115,24 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
+        ///   コピー処理中です。中断しますか? に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string MessageBox_AbortCopy {
+            get {
+                return ResourceManager.GetString("MessageBox_AbortCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   確認 に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string MessageBox_Confirm {
+            get {
+                return ResourceManager.GetString("MessageBox_Confirm", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   エラー に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string MessageBox_Error {
@@ -143,7 +161,7 @@ namespace HCopy.Properties {
         
         /// <summary>
         ///   HCopyW &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///HCopyWはsource-dirから checksum.md5 に列挙されたファイルをコピーする。
+        ///HCopyWはsource-dirから _checksum.sha に列挙されたファイルをコピーする。
         ///
         ///Options:
         ///  --wait &lt;file&gt;
@@ -165,7 +183,7 @@ namespace HCopy.Properties {
         ///      &lt;source-dir&gt;からの相対パス指定可
         ///
         ///  --log &lt;file&gt;
-        ///  -l [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///  - [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

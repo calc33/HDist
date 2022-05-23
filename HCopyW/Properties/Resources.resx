@@ -135,6 +135,12 @@
   <data name="InvalidOptionFmt" xml:space="preserve">
     <value>不明なオプション: {0}</value>
   </data>
+  <data name="MessageBox_AbortCopy" xml:space="preserve">
+    <value>コピー処理中です。中断しますか?</value>
+  </data>
+  <data name="MessageBox_Confirm" xml:space="preserve">
+    <value>確認</value>
+  </data>
   <data name="MessageBox_Error" xml:space="preserve">
     <value>エラー</value>
   </data>

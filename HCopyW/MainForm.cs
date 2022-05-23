@@ -566,7 +566,7 @@ namespace HCopy
             {
                 return;
             }
-            DialogResult ret = MessageBox.Show(this, "コピー処理中です。中断しますか?", "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            DialogResult ret = MessageBox.Show(this, Properties.Resources.MessageBox_AbortCopy, Properties.Resources.MessageBox_Confirm, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
             if (ret != DialogResult.Yes)
             {
                 e.Cancel = true;
