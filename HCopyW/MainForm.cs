@@ -26,12 +26,15 @@ namespace HCopy
         private string _sourceDir;
         private string _compressDir;
         private string _statusText;
-        private List<string> _logStore;
+        private bool _isRan = false;
+        private List<string> _logStore = new List<string>();
         private object _logStoreLock = new object();
         private const uint UM_STATUS = 0x4560;
         private const uint UM_LOG = 0x4561;
         private const uint UM_FINISH = 0x4562;
         private const uint UM_UPDATEBUTTON = 0x4563;
+        private const uint UM_START = 0x4564;
+
         private bool _umStatusPosted = false;
         private bool _umLogPosted = false;
 
@@ -297,7 +300,32 @@ namespace HCopy
                 m.Result = new IntPtr(1);
                 return;
             }
+            if (m.Msg == UM_START)
+            {
+                if (!_isRan)
+                {
+                    _isRan = true;
+                    Run();
+                }
+            }
             base.WndProc(ref m);
+        }
+
+        /// <summary>
+        /// Handleはマルチスレッドでアクセスできないので_handleにコピーして参照
+        /// </summary>
+        private IntPtr _handle;
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            _handle = Handle;
+            base.OnHandleCreated(e);
+        }
+
+
+        private void PostMsg(uint Msg)
+        {
+            NativeMethods.PostMessage(_handle, Msg, IntPtr.Zero, IntPtr.Zero);
         }
 
         private void ShowUsage()
@@ -319,7 +347,7 @@ namespace HCopy
             }
             if (!_umLogPosted)
             {
-                NativeMethods.PostMessage(Handle, UM_LOG, IntPtr.Zero, IntPtr.Zero);
+                PostMsg(UM_LOG);
                 _umLogPosted = true;
             }
             _logWriter?.WriteLine(string.Format("[{0:HH:mm:ss}({1})] {2}", DateTime.Now, _processId, message));
@@ -330,7 +358,7 @@ namespace HCopy
             _statusText = text;
             if (!_umStatusPosted)
             {
-                NativeMethods.PostMessage(Handle, UM_STATUS, IntPtr.Zero, IntPtr.Zero);
+                PostMsg(UM_STATUS);
                 _umStatusPosted = true;
             }
         }
@@ -477,7 +505,7 @@ namespace HCopy
 
         private void EndThread()
         {
-            NativeMethods.PostMessage(Handle, UM_FINISH, IntPtr.Zero, IntPtr.Zero);
+            PostMsg(UM_FINISH);
             _executingFileList = null;
             _executingTask = null;
         }
@@ -514,8 +542,42 @@ namespace HCopy
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            string[] cmds = Environment.GetCommandLineArgs();
+            string[] args = new string[cmds.Length - 1];
+            Array.Copy(cmds, 1, args, 0, args.Length);
+            InitByArgs(args);
             UpdateLabels();
             textBoxLog.Clear();
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            PostMsg(UM_START);
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.WindowsShutDown)
+            {
+                return;
+            }
+            Task task = _executingTask;
+            if (task == null || task.IsCompleted)
+            {
+                return;
+            }
+            DialogResult ret = MessageBox.Show(this, "コピー処理中です。中断しますか?", "確認", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (ret != DialogResult.Yes)
+            {
+                e.Cancel = true;
+            }
+            _quitOnFinish = true;
+            FileList list = _executingFileList;
+            if (list != null)
+            {
+                list.Abort();
+                e.Cancel = true;
+            }
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -526,21 +588,26 @@ namespace HCopy
         private void timerAutoQuit_Tick(object sender, EventArgs e)
         {
             UpdateButtonQuitText();
+            if (_autoQuitTime <= DateTime.Now)
+            {
+                Close();
+            }
         }
 
         private void buttonPause_Click(object sender, EventArgs e)
         {
-            if (_executingFileList == null)
+            FileList list = _executingFileList;
+            if (list == null)
             {
                 return;
             }
-            if (_executingFileList.Pausing)
+            if (list.Pausing)
             {
-                _executingFileList.Pause();
+                list.Pause();
             }
             else
             {
-                _executingFileList.Resume();
+                list.Resume();
             }
             DelayedUpdateButtonText();
         }
@@ -554,8 +621,16 @@ namespace HCopy
                 return;
             }
             _quitOnFinish = true;
-            _executingFileList?.Abort();
-            DelayedUpdateButtonText();
+            FileList list = _executingFileList;
+            if (list != null)
+            {
+                list.Abort();
+                DelayedUpdateButtonText();
+            }
+            else
+            {
+                Close();
+            }
         }
     }
 }

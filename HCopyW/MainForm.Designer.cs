@@ -162,17 +162,17 @@ namespace HCopy
             // 
             this.buttonQuit.Location = new System.Drawing.Point(316, 6);
             this.buttonQuit.Name = "buttonQuit";
-            this.buttonQuit.Size = new System.Drawing.Size(75, 23);
+            this.buttonQuit.Size = new System.Drawing.Size(85, 23);
             this.buttonQuit.TabIndex = 1;
-            this.buttonQuit.Text = "終了";
+            this.buttonQuit.Text = "終了中断(5)";
             this.buttonQuit.UseVisualStyleBackColor = true;
             this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
             // 
             // buttonPause
             // 
-            this.buttonPause.Location = new System.Drawing.Point(235, 6);
+            this.buttonPause.Location = new System.Drawing.Point(225, 6);
             this.buttonPause.Name = "buttonPause";
-            this.buttonPause.Size = new System.Drawing.Size(75, 23);
+            this.buttonPause.Size = new System.Drawing.Size(85, 23);
             this.buttonPause.TabIndex = 0;
             this.buttonPause.Text = "一時停止";
             this.buttonPause.UseVisualStyleBackColor = true;
@@ -203,8 +203,10 @@ namespace HCopy
             this.Controls.Add(this.panelTop);
             this.Name = "MainForm";
             this.Text = "HCopy";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.panelBottom.ResumeLayout(false);

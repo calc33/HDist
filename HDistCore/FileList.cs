@@ -47,13 +47,14 @@ namespace HDistCore
             }
 
             private const string CompressExtenstion = ".bz2";
-            private bool ExtractFile(string destination)
+            private bool ExtractFile(string destinationDirectory)
             {
                 if (string.IsNullOrEmpty(_owner.CompressedDirectory))
                 {
                     return false;
                 }
-                string src = Path.Combine(_owner.CompressedDirectory, FileName) + CompressExtenstion;
+                string dir = Path.Combine(_owner.BaseDirectory, _owner.CompressedDirectory);
+                string src = Path.Combine(dir, FileName) + CompressExtenstion;
                 if (!File.Exists(src))
                 {
                     return false;
@@ -61,12 +62,13 @@ namespace HDistCore
                 OnLog(LogStatus.Information, LogCategory.CopyCompressed, null);
                 using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
-                    using (FileStream destStream = new FileStream(destination, FileMode.Create, FileAccess.Write, FileShare.None))
+                    string dest = Path.Combine(destinationDirectory, FileName);
+                    using (FileStream destStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None))
                     {
                         BZip2.Decompress(srcStream, destStream, true);
                     }
                 }
-                bool mod = IsModified(destination);
+                bool mod = IsModified(destinationDirectory);
                 if (mod)
                 {
                     OnLog(LogStatus.Warning, LogCategory.FailToExtract, null);
@@ -109,7 +111,7 @@ namespace HDistCore
                 bool flag = false;
                 try
                 {
-                    flag = ExtractFile(dest);
+                    flag = ExtractFile(destinationDirectory);
                 }
                 catch (Exception t)
                 {

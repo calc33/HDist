@@ -19,9 +19,10 @@ namespace HCopy
         private string SourceDir;
         private string CompressDir;
         
-        private void ShowUsage()
+        private void ShowUsage(int exitCode)
         {
             Console.Error.Write(Properties.Resources.Usage);
+            Environment.Exit(exitCode);
         }
 
         private void Error(string message)
@@ -53,8 +54,8 @@ namespace HCopy
             if (writer != null)
             {
                 writer.WriteLine(msg);
+                writer.Flush();
             }
-            writer.Flush();
         }
         
         private void Checksum_Log(object sender, LogEventArgs e)
@@ -109,8 +110,8 @@ namespace HCopy
                             CompressDir = args[i];
                             break;
                         case "--help":
-                            ShowUsage();
-                            break;
+                            ShowUsage(0);
+                            return;
                         default:
                             if (a.StartsWith("-"))
                             {
@@ -136,8 +137,8 @@ namespace HCopy
                     DestinationDir = paths[1];
                     break;
                 default:
-                    ShowUsage();
-                    break;
+                    ShowUsage(1);
+                    return;
             }
         }
         public void Run()

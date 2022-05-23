@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "HashCopy": {
+    "HCopyW": {
       "commandName": "Project",
       "commandLineArgs": "D:\\Users\\baba\\Documents\\DevUtils.net\\HDist D:\\Users\\baba\\Documents\\DevUtils.net\\HDistCp --compress ..\\bzip2"
     }
