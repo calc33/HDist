@@ -523,11 +523,10 @@ namespace HCopy
                     StartAutoQuit();
                     return;
                 }
-                _executingFileList = FileList.LoadChecksum(SourceDir);
-                _executingFileList.WaitUnlocked(DestinationDir, WaitFile);
-                _executingFileList.CompressedDirectory = CompressDir;
+                _executingFileList = FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
                 _executingFileList.Log += FileList_Log;
-                _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(DestinationDir); EndThread(); });
+                _executingFileList.WaitUnlocked(WaitFile);
+                _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(); EndThread(); });
             }
             finally
             {

@@ -7,169 +7,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.BZip2;
 
 namespace HDistCore
 {
-    public class FileList: IEnumerable<FileList.FileEntry>
+    public partial class FileList: IEnumerable<FileList.FileEntry>
     {
         private const string CHECKSUM_FILE = "_checksum.sha";
         private const string UPDATED_FILE = "_updated";
-        public class FileEntry : IComparable
-        {
-            private FileList _owner;
-            public string FileName { get; set; }
-            public string Checksum { get; set; }
-
-            public string GetChecksum(string directory)
-            {
-                string path = Path.Combine(directory, FileName);
-                if (!File.Exists(path))
-                {
-                    return null;
-                }
-                SHA1 sha = SHA1.Create();
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    sha.ComputeHash(stream);
-                }
-                return Convert.ToBase64String(sha.Hash);
-            }
-
-            public bool IsModified(string directory)
-            {
-                return Checksum != GetChecksum(directory);
-            }
-
-            public void Write(TextWriter writer)
-            {
-                writer.WriteLine(string.Format("{0}\t{1}", GetChecksum(_owner.BaseDirectory), FileName));
-            }
-
-            private const string CompressExtenstion = ".bz2";
-            private bool ExtractFile(string destinationDirectory)
-            {
-                if (string.IsNullOrEmpty(_owner.CompressedDirectory))
-                {
-                    return false;
-                }
-                string dir = Path.Combine(_owner.BaseDirectory, _owner.CompressedDirectory);
-                string src = Path.Combine(dir, FileName) + CompressExtenstion;
-                if (!File.Exists(src))
-                {
-                    return false;
-                }
-                OnLog(LogStatus.Information, LogCategory.CopyCompressed, null);
-                using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    string dest = Path.Combine(destinationDirectory, FileName);
-                    using (FileStream destStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        BZip2.Decompress(srcStream, destStream, true);
-                    }
-                }
-                bool mod = IsModified(destinationDirectory);
-                if (mod)
-                {
-                    OnLog(LogStatus.Warning, LogCategory.FailToExtract, null);
-                }
-                return !mod;
-            }
-
-            public void CompressFile()
-            {
-                if (string.IsNullOrEmpty(_owner.CompressedDirectory))
-                {
-                    return;
-                }
-                string src = Path.Combine(_owner.BaseDirectory, FileName);
-                string dest = Path.Combine(_owner.CompressedDirectory, FileName) + CompressExtenstion;
-                string destDir = Path.GetDirectoryName(dest);
-                if (!string.IsNullOrEmpty(destDir))
-                {
-                    Directory.CreateDirectory(destDir);
-                }
-                OnLog(LogStatus.Information, LogCategory.Compressing, null);
-                using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    using (FileStream destStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None))
-                    {
-                        BZip2.Compress(srcStream, destStream, true, 9);
-                    }
-                }
-            }
-
-            private void CopyFile(string destinationDirectory)
-            {
-                string src = Path.Combine(_owner.BaseDirectory, FileName);
-                string dest = Path.Combine(destinationDirectory, FileName);
-                string destDir = Path.GetDirectoryName(dest);
-                if (!string.IsNullOrEmpty(destDir))
-                {
-                    Directory.CreateDirectory(destDir);
-                }
-                bool flag = false;
-                try
-                {
-                    flag = ExtractFile(destinationDirectory);
-                }
-                catch (Exception t)
-                {
-                    OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
-                }
-                if (!flag)
-                {
-                    OnLog(LogStatus.Information, LogCategory.Copy, null);
-                    try
-                    {
-                        File.Copy(src, dest, true);
-                    }
-                    catch(Exception t)
-                    {
-                        OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
-                    }
-                }
-            }
-
-            public void UpdateFile(string destinationDirectory)
-            {
-                OnLog(LogStatus.Progress, LogCategory.NoMessage, null);
-                if (!IsModified(destinationDirectory))
-                {
-                    return;
-                }
-                CopyFile(destinationDirectory);
-                return;
-            }
-
-            private void OnLog(LogStatus status, LogCategory category, string message)
-            {
-                _owner.OnLog(new LogEventArgs(status, category, FileName, message));
-            }
-
-            public FileEntry(FileList owner, string filename, string checksum)
-            {
-                _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
-                Checksum = checksum;
-            }
-
-            public FileEntry(FileList owner, string filename)
-            {
-                _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
-                Checksum = GetChecksum(_owner.BaseDirectory);
-            }
-
-            public int CompareTo(object obj)
-            {
-                if (!(obj is FileEntry))
-                {
-                    return -1;
-                }
-                return string.Compare(FileName, ((FileEntry)obj).FileName, FileList.FileNameComparison);
-            }
-        }
         private static StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
         private static bool _ignoreCase = true;
         public static bool IgnoreCase
@@ -195,12 +39,43 @@ namespace HDistCore
         public string FileName { get; set; }
         public string BaseDirectory { get; set; }
         public string CompressedDirectory { get; set; }
+        public string DestinationDirectory { get; set; }
         /// <summary>
         /// _checksum.sha のSHA1チェックサム値
         /// </summary>
         public byte[] Checksum { get; }
         private List<FileEntry> _list = new List<FileEntry>();
-        private Dictionary<string, FileEntry> _nameToEntry = new Dictionary<string, FileEntry>();
+        //private Dictionary<string, FileEntry> _nameToEntry = new Dictionary<string, FileEntry>();
+        private Dictionary<string, FileEntry> _nameToEntry;
+        private object _nameToEntryLock = new object();
+
+        private void UpdateNameToEntry()
+        {
+            if (_nameToEntry != null)
+            {
+                return;
+            }
+            lock (_nameToEntryLock)
+            {
+                if (_nameToEntry != null)
+                {
+                    return;
+                }
+                _nameToEntry = new Dictionary<string, FileEntry>();
+                foreach (FileEntry entry in _list)
+                {
+                    _nameToEntry[Treat(entry.FileName)] = entry;
+                }
+            }
+        }
+
+        private void InvalidateNameToEntry()
+        {
+            lock (_nameToEntryLock)
+            {
+                _nameToEntry = null;
+            }
+        }
 
         private bool _aborting = false;
         private bool _pausing = false;
@@ -224,6 +99,29 @@ namespace HDistCore
             {
                 return _list[index];
             }
+        }
+
+        public FileEntry FindEntry(string filename)
+        {
+            UpdateNameToEntry();
+            FileEntry entry;
+            if (_nameToEntry.TryGetValue(Treat(filename), out entry))
+            {
+                return entry;
+            }
+            return null;
+        }
+
+        public FileEntry FindEntry(string targetDirectory, string filename)
+        {
+            UpdateNameToEntry();
+            string path = Path.GetRelativePath(targetDirectory, filename);
+            FileEntry entry;
+            if (_nameToEntry.TryGetValue(Treat(path), out entry))
+            {
+                return entry;
+            }
+            return null;
         }
 
         public void SaveChecksum()
@@ -270,7 +168,7 @@ namespace HDistCore
             }
         }
 
-        public void UpdateFiles(string destinationDirectory)
+        public void UpdateFiles()
         {
             bool success = false;
             _aborting = false;
@@ -279,7 +177,7 @@ namespace HDistCore
             {
                 try
                 {
-                    entry.UpdateFile(destinationDirectory);
+                    entry.UpdateFile();
                 }
                 catch (Exception t)
                 {
@@ -303,7 +201,7 @@ namespace HDistCore
             }
             try
             {
-                string path = Path.Combine(destinationDirectory, UPDATED_FILE);
+                string path = Path.Combine(DestinationDirectory, UPDATED_FILE);
                 if (success)
                 {
                     using (StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8))
@@ -322,6 +220,41 @@ namespace HDistCore
             catch (Exception t)
             {
                 OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, UPDATED_FILE, t.Message));
+            }
+        }
+
+        public void UpdateFiles(string[] files)
+        {
+            _aborting = false;
+            _pausing = false;
+            foreach (string s in files)
+            {
+                FileEntry entry = FindEntry(s);
+                if (entry == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    entry.UpdateFile();
+                }
+                catch (Exception t)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, entry.FileName, t.Message));
+                }
+                if (_pausing)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
+                    while (_pausing && !_aborting)
+                    {
+                        Thread.Sleep(100);
+                    }
+                }
+                if (_aborting)
+                {
+                    OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
+                    break;
+                }
             }
         }
 
@@ -357,13 +290,13 @@ namespace HDistCore
             }
         }
 
-        public void WaitUnlocked(string directory, string filename)
+        public void WaitUnlocked(string filename)
         {
             if (string.IsNullOrEmpty(filename))
             {
                 return;
             }
-            string path = Path.Combine(directory, filename);
+            string path = Path.Combine(DestinationDirectory, filename);
             if (IsWritable(path))
             {
                 return;
@@ -395,6 +328,7 @@ namespace HDistCore
                     }
                 }
             }
+            InvalidateNameToEntry();
             SHA1 sha = SHA1.Create();
             using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
@@ -424,7 +358,7 @@ namespace HDistCore
                 }
                 EnumFiles(s, ignoreNames);
             }
-
+            InvalidateNameToEntry();
         }
 
         internal FileList(string baseDir, IList<string> ignoreNames)
@@ -442,18 +376,26 @@ namespace HDistCore
             Checksum = new byte[0];
         }
 
-        public static FileList CreateByDirectory(string directory, IList<string> ignoreNames)
+        public static FileList CreateByDirectory(string directory, IList<string> ignoreNames, string compressDirectory)
         {
-            return new FileList(directory, ignoreNames);
+            return new FileList(directory, ignoreNames)
+            {
+                CompressedDirectory = compressDirectory,
+                DestinationDirectory = directory,
+            };
         }
 
-        public static FileList LoadChecksum(string directory)
+        public static FileList LoadChecksum(string sourceDirectory, string compressDirectory, string destinationDirectory)
         {
-            return LoadFromFile(directory, Path.Combine(directory, CHECKSUM_FILE));
+            return LoadFromFile(sourceDirectory, Path.Combine(sourceDirectory, CHECKSUM_FILE), compressDirectory, destinationDirectory);
         }
-        public static FileList LoadFromFile(string directory, string filename)
+        public static FileList LoadFromFile(string directory, string filename, string compressDirectory, string destinationDirectory)
         {
-            return new FileList(directory, filename);
+            return new FileList(directory, filename)
+            {
+                CompressedDirectory = compressDirectory,
+                DestinationDirectory = destinationDirectory,
+            };
         }
 
         #region IEnumerable<FileEntry>

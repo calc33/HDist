@@ -150,11 +150,10 @@ namespace HCopy
                     Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
                     return;
                 }
-                HDistCore.FileList list = HDistCore.FileList.LoadChecksum(SourceDir);
-                list.WaitUnlocked(DestinationDir, WaitFile);
-                list.CompressedDirectory = CompressDir;
+                HDistCore.FileList list = HDistCore.FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
                 list.Log += Checksum_Log;
-                list.UpdateFiles(DestinationDir);
+                list.WaitUnlocked(WaitFile);
+                list.UpdateFiles();
             }
             finally
             {

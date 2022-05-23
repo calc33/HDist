@@ -151,8 +151,7 @@ namespace BuildSum
             {
                 Error(string.Format("{0}: ディレクトリがありません", TargetDir));
             }
-            FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles);
-            list.CompressedDirectory = CompressDir;
+            FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, CompressDir);
             list.Log += FileList_Log;
             list.SaveChecksum();
             CompressFiles(list);
