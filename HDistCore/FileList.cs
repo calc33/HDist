@@ -127,7 +127,8 @@ namespace HDistCore
 
         public void SaveChecksum()
         {
-            SaveToFile(Path.Combine(BaseDirectory, CHECKSUM_FILE));
+            string path = Path.Combine(BaseDirectory, CHECKSUM_FILE);
+            SaveToFile(path);
         }
 
         public void SaveToFile(string filename)
@@ -139,6 +140,8 @@ namespace HDistCore
                     writer.WriteLine(entry.GetChecksum(BaseDirectory) + "\t" + entry.FileName);
                 }
             }
+            FileAttributes attr = File.GetAttributes(filename);
+            File.SetAttributes(filename, attr | FileAttributes.Hidden);
         }
         public void SaveToStream(Stream stream)
         {
@@ -337,43 +340,43 @@ namespace HDistCore
             }
         }
         
-        private void EnumFiles(string directory, List<Regex> ignoreNames)
+        private bool IsIgnored(string fullPath, string relPath, List<Regex> ignoreNames, bool ignoreHidden)
+        {
+            if (ignoreHidden && (File.GetAttributes(fullPath) & FileAttributes.Hidden) != 0)
+            {
+                return true;
+            }
+            string path1 = Treat(relPath);
+            string path2 = Path.GetFileName(path1);
+            foreach (Regex regex in ignoreNames)
+            {
+                if (regex.Match(path1).Success || regex.Match(path2).Success)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void EnumFiles(string directory, List<Regex> ignoreNames, bool ignoreHidden)
         {
             foreach (string s in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
             {
-                string path1 = Path.GetRelativePath(BaseDirectory, s);
-                string path2 = Path.GetFileName(s);
-                bool ignore = false;
-                foreach (Regex regex in ignoreNames)
+                string relPath = Path.GetRelativePath(BaseDirectory, s);
+                if (IsIgnored(s, relPath, ignoreNames, ignoreHidden))
                 {
-                    if (regex.Match(Treat(path1)).Success || regex.Match(Treat(path2)).Success)
-                    {
-                        ignore = true;
-                        break;
-                    }
+                    continue;
                 }
-                if (!ignore)
-                {
-                    _list.Add(new FileEntry(this, path1));
-                }
+                _list.Add(new FileEntry(this, relPath));
             }
             foreach (string s in Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly))
             {
-                string path1 = Path.GetRelativePath(BaseDirectory, s);
-                string path2 = Path.GetFileName(s);
-                bool ignore = false;
-                foreach (Regex regex in ignoreNames)
+                string relPath = Path.GetRelativePath(BaseDirectory, s);
+                if (IsIgnored(s, relPath, ignoreNames, ignoreHidden))
                 {
-                    if (regex.Match(Treat(path1)).Success || regex.Match(Treat(path2)).Success)
-                    {
-                        ignore = true;
-                        break;
-                    }
+                    continue;
                 }
-                if (!ignore)
-                {
-                    EnumFiles(s, ignoreNames);
-                }
+                EnumFiles(s, ignoreNames, ignoreHidden);
             }
             InvalidateNameToEntry();
         }
@@ -411,7 +414,7 @@ namespace HDistCore
             return new Regex(buf.ToString());
         }
 
-        internal FileList(string baseDir, IList<string> ignoreNames)
+        internal FileList(string baseDir, IList<string> ignoreNames, bool ignoreHidden)
         {
             FileName = null;
             BaseDirectory = baseDir;
@@ -421,14 +424,14 @@ namespace HDistCore
                 ignores.Add(ToRegex(s));
             }
             ignores.Add(ToRegex(CHECKSUM_FILE));
-            EnumFiles(baseDir, ignores);
+            EnumFiles(baseDir, ignores, ignoreHidden);
             _list.Sort();
             Checksum = new byte[0];
         }
 
-        public static FileList CreateByDirectory(string directory, IList<string> ignoreNames, string compressDirectory)
+        public static FileList CreateByDirectory(string directory, IList<string> ignoreNames, bool ignodeHidden, string compressDirectory)
         {
-            return new FileList(directory, ignoreNames)
+            return new FileList(directory, ignoreNames, ignodeHidden)
             {
                 CompressedDirectory = compressDirectory,
                 DestinationDirectory = directory,

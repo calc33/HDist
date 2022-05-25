@@ -5,3 +5,5 @@
 /.vs
 bin
 obj
+/_checksum.sha
+launchSettings.json

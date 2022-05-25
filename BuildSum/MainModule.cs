@@ -13,6 +13,7 @@ namespace BuildSum
         public string TargetDir;
         public string CompressDir;
         public List<string> IgnoreFiles = new List<string>();
+        public bool IgnoreHidden = true;
 
         private void Log(LogStatus status, LogCategory category, string filename, string message)
         {
@@ -90,6 +91,10 @@ namespace BuildSum
                             i++;
                             ignorePath = args[i];
                             break;
+                        case "--include-hidden":
+                        case "-h":
+                            IgnoreHidden = false;
+                            break;
                         case "--help":
                         case "/?":
                             ShowUsage();
@@ -152,7 +157,7 @@ namespace BuildSum
             {
                 Error(string.Format("{0}: ディレクトリがありません", TargetDir));
             }
-            FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, CompressDir);
+            FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, IgnoreHidden, CompressDir);
             list.Log += FileList_Log;
             list.SaveChecksum();
             CompressFiles(list);
