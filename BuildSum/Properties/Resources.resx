@@ -117,14 +117,17 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DirectoryNotFoundFmt" xml:space="preserve">
+    <value>{0}: No such directory</value>
+  </data>
   <data name="Error_MultipleOption" xml:space="preserve">
-    <value>--ignore-listを複数指定できません</value>
+    <value>Cannot specify multiple --ignore-list</value>
   </data>
   <data name="Error_OptionConfliected" xml:space="preserve">
-    <value>--ignoreと--ignore-listを同時に指定できません</value>
+    <value>--ignore and --ignore-list cannot be specified at the same time</value>
   </data>
   <data name="ParameterRequiedFmt" xml:space="preserve">
-    <value>{0}に続くパラメータがありません</value>
+    <value>There is no parameter following {0}</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">

@@ -118,40 +118,40 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ButtonPause_Pause" xml:space="preserve">
-    <value>Pause</value>
+    <value>中断</value>
   </data>
   <data name="ButtonPause_Resume" xml:space="preserve">
-    <value>Resume</value>
+    <value>再開</value>
   </data>
   <data name="ButtonQuit_AutoQuitFmt" xml:space="preserve">
-    <value>Abort quit({0})</value>
+    <value>終了中断({0})</value>
   </data>
   <data name="ButtonQuit_Quit" xml:space="preserve">
-    <value>Quit</value>
+    <value>終了</value>
   </data>
   <data name="EmptyText" xml:space="preserve">
-    <value>(none)</value>
+    <value>(なし)</value>
   </data>
   <data name="InvalidOptionFmt" xml:space="preserve">
-    <value>Invalid parameter: {0}</value>
+    <value>不明なオプション: {0}</value>
   </data>
   <data name="MessageBox_AbortCopy" xml:space="preserve">
-    <value>Copy processing is in progress. Do you want to abort?</value>
+    <value>コピー処理中です。中断しますか?</value>
   </data>
   <data name="MessageBox_Confirm" xml:space="preserve">
-    <value>Confirm</value>
+    <value>確認</value>
   </data>
   <data name="MessageBox_Error" xml:space="preserve">
-    <value>Error</value>
+    <value>エラー</value>
   </data>
   <data name="MessageBox_Usage" xml:space="preserve">
     <value>HCopyW</value>
   </data>
   <data name="ParameterRequiedFmt" xml:space="preserve">
-    <value>There is no parameter following {0}</value>
+    <value>{0}に続くパラメータがありません</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Usage.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
+    <value>..\Resources\Usage.ja.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>
 </root>

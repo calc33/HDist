@@ -155,7 +155,7 @@ namespace BuildSum
         {
             if (!Directory.Exists(TargetDir))
             {
-                Error(string.Format("{0}: ディレクトリがありません", TargetDir));
+                Error(string.Format(Properties.Resources.DirectoryNotFoundFmt, TargetDir));
             }
             FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, IgnoreHidden, CompressDir);
             list.Log += FileList_Log;

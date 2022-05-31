@@ -1,25 +1,25 @@
 hcopy <source-dir> <destination-dir> [options]
-hcopyは<source-dir>から _checksum.sha に列挙されたファイルをコピーする。
+hcopy copies files from <source-dir> listed in "_checksum.sha".
 
 Options:
   --wait <file>
   -w <file>
-      <file>の書き込みロックが解除されるまで待ってからコピーを開始する。
+      Wait for the <file> write lock to be released before starting copying.
 
   --run <executable>
   -r <executable>
-      コピーの終了後に指定したプログラムを起動する。
+      Starts the program specified by <executable> after copying is completed.
 
   --param <parameters>
   -p <parameters>
-      --run で指定したプログラムを実行する際のパラメータを指定する。
-      複数ある場合は"で括る。
+      Specify the parameters for executing the program specified by --run.
+      If there are multiple parameters, enclose them in ".
 
   --compress <directory>
   -c <directory>
-      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する。
-      相対パスで指定した場合は<source-dir>からの相対パスになる。
+      Specify the directory that stores the compressed files for faster copy
+      If specified as a relative path, it will be a relative path from <source-dir>.
 
   --help
   /?
-      このヘルプを表示。
+      Show this help.

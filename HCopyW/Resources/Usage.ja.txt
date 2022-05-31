@@ -1,0 +1,37 @@
+HCopyW <source-dir> <destination-dir> [options]
+HCopyWはsource-dirから _checksum.sha に列挙されたファイルをコピーする。
+
+Options:
+  --wait <file>
+  -w <file>
+      <file>の書き込みロックが解除されるまで待ってからコピーを開始する
+
+  --run <executable>
+  -r <executable>
+      コピーの終了後に指定したプログラムを起動する。
+
+  --param <parameters>
+  -p <parameters>
+      --run で指定したプログラムを実行する際のパラメータを指定する。
+      複数ある場合は"で括る。
+
+  --compress <directory>
+  -c <directory>
+      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する
+      相対パスで指定した場合は<source-dir>からの相対パスになる
+
+  --log <file>
+  -l <file>
+      ログをファイルに出力したい場合、ファイル名を指定する。
+      ファイル名に日時を含みたい場合、以下のパラメータが実行時に置換される
+        %Y 年(4桁)
+        %M 月(2桁)
+        %D 日(2桁)
+        %H 時(2桁、24時間表記)
+        %N 分(2桁)
+        %S 秒(2桁)
+        %P プロセスID
+
+  --help
+  /?
+      このヘルプを表示

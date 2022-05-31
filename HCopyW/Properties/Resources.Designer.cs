@@ -61,7 +61,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   中断 に類似しているローカライズされた文字列を検索します。
+        ///   Pause に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ButtonPause_Pause {
             get {
@@ -70,7 +70,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   再開 に類似しているローカライズされた文字列を検索します。
+        ///   Resume に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ButtonPause_Resume {
             get {
@@ -79,7 +79,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   終了中断({0}) に類似しているローカライズされた文字列を検索します。
+        ///   Abort quit({0}) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ButtonQuit_AutoQuitFmt {
             get {
@@ -88,7 +88,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   終了 に類似しているローカライズされた文字列を検索します。
+        ///   Quit に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ButtonQuit_Quit {
             get {
@@ -97,7 +97,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   (なし) に類似しているローカライズされた文字列を検索します。
+        ///   (none) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string EmptyText {
             get {
@@ -106,7 +106,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   不明なオプション: {0} に類似しているローカライズされた文字列を検索します。
+        ///   Invalid parameter: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string InvalidOptionFmt {
             get {
@@ -115,7 +115,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   コピー処理中です。中断しますか? に類似しているローカライズされた文字列を検索します。
+        ///   Copy processing is in progress. Do you want to abort? に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string MessageBox_AbortCopy {
             get {
@@ -124,7 +124,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   確認 に類似しているローカライズされた文字列を検索します。
+        ///   Confirm に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string MessageBox_Confirm {
             get {
@@ -133,7 +133,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   エラー に類似しているローカライズされた文字列を検索します。
+        ///   Error に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string MessageBox_Error {
             get {
@@ -151,7 +151,7 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   {0}に続くパラメータがありません に類似しているローカライズされた文字列を検索します。
+        ///   There is no parameter following {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ParameterRequiedFmt {
             get {
@@ -161,28 +161,21 @@ namespace HCopy.Properties {
         
         /// <summary>
         ///   HCopyW &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///HCopyWはsource-dirから _checksum.sha に列挙されたファイルをコピーする。
+        ///HCopyW copies files from &lt;source-dir&gt; listed in &quot;_checksum.sha&quot;.
         ///
         ///Options:
         ///  --wait &lt;file&gt;
         ///  -w &lt;file&gt;
-        ///      &lt;file&gt;の書き込みロックが解除されるまで待ってからコピーを開始する
+        ///      Wait for the &lt;file&gt; write lock to be released before starting copying.
         ///
         ///  --run &lt;executable&gt;
         ///  -r &lt;executable&gt;
-        ///      コピーの終了後に指定したプログラムを起動する。
+        ///      Starts the program specified by &lt;executable&gt; after copying is completed.
         ///
         ///  --param &lt;parameters&gt;
         ///  -p &lt;parameters&gt;
-        ///      --run で指定したプログラムを実行する際のパラメータを指定する。
-        ///      複数ある場合は&quot;で括る。
-        ///
-        ///  --compress &lt;directory&gt;
-        ///  -c &lt;directory&gt;
-        ///      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する
-        ///      相対パスで指定した場合は&lt;source-dir&gt;からの相対パスになる
-        ///
-        ///  --log &lt;f [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      Specify the parameters for executing the program specified by --run.
+        ///      If there are multiple param [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

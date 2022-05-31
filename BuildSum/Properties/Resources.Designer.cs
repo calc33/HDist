@@ -61,7 +61,16 @@ namespace BuildSum.Properties {
         }
         
         /// <summary>
-        ///   --ignore-listを複数指定できません に類似しているローカライズされた文字列を検索します。
+        ///   {0}: No such directory に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string DirectoryNotFoundFmt {
+            get {
+                return ResourceManager.GetString("DirectoryNotFoundFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Cannot specify multiple --ignore-list に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Error_MultipleOption {
             get {
@@ -70,7 +79,7 @@ namespace BuildSum.Properties {
         }
         
         /// <summary>
-        ///   --ignoreと--ignore-listを同時に指定できません に類似しているローカライズされた文字列を検索します。
+        ///   --ignore and --ignore-list cannot be specified at the same time に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Error_OptionConfliected {
             get {
@@ -79,7 +88,7 @@ namespace BuildSum.Properties {
         }
         
         /// <summary>
-        ///   {0}に続くパラメータがありません に類似しているローカライズされた文字列を検索します。
+        ///   There is no parameter following {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ParameterRequiedFmt {
             get {
@@ -90,7 +99,7 @@ namespace BuildSum.Properties {
         /// <summary>
         ///   BuildSum [&lt;target-dir&gt;] [options]
         ///BuildSumは&lt;target-dir&gt;で指定したディレクトリに含まれるファイルの
-        ///MD5チェックサム一覧をchecksum.md5 という名前で生成する。
+        ///SHA1チェックサム一覧を _checksum.sha という名前で生成する。
         ///&lt;target-dir&gt;を省略した場合はカレントディレクトリが対象
         ///
         ///Options:
@@ -98,16 +107,16 @@ namespace BuildSum.Properties {
         ///  -c &lt;compress-dir&gt;
         ///      圧縮ファイルを格納するディレクトリ。
         ///      圧縮ファイルを使うことでネットワークの負荷を軽減できる。
+        ///      相対パスで指定した場合は&lt;target-dir&gt;からの相対パスになる。
         ///
         ///  --ignore &lt;name&gt;
         ///  -i &lt;name&gt;
-        ///      一覧作成時に無視するファイル名/ディレクトリ名。ワイルドカードは使えない。
+        ///      一覧作成時に無視するファイル名/ディレクトリ名。ワイルドカード可。
         ///      複数のファイル名を指定したい場合、このオプションを複数回指定する。
         ///      --ignore-listと排他的に使用する。
         ///
         ///  --ignore-list &lt;filename&gt;
-        ///  -I &lt;filename&gt;
-        ///      一覧作成時に無視するファイル名/ディレクトリ名の一覧を格納したフ [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///  -I &lt;filenam [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

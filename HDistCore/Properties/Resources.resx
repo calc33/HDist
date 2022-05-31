@@ -118,39 +118,39 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="LogFormatAborted" xml:space="preserve">
-    <value>中断しました。</value>
+    <value>Aborted.</value>
   </data>
   <data name="LogFormatCompressing" xml:space="preserve">
-    <value>{0}を圧縮中</value>
+    <value>Compressing {0}</value>
   </data>
   <data name="LogFormatCopy" xml:space="preserve">
-    <value>{0}をコピー中</value>
+    <value>Copying {0}</value>
   </data>
   <data name="LogFormatCopyCompressed" xml:space="preserve">
-    <value>{0}を圧縮コピー中</value>
+    <value>Copying {0} (compressed)</value>
   </data>
   <data name="LogFormatException" xml:space="preserve">
     <value>{0}: {1}</value>
   </data>
   <data name="LogFormatFailToExtract" xml:space="preserve">
-    <value>{0}の圧縮コピーに失敗しました。通常コピーします。</value>
+    <value>{0}: Failed to copy by compressed, start copying normally</value>
   </data>
   <data name="LogFormatFinished" xml:space="preserve">
-    <value>***終了しました***</value>
+    <value>***Finished***</value>
   </data>
   <data name="LogFormatNoMessage" xml:space="preserve">
     <value>{0}</value>
   </data>
   <data name="LogFormatPaused" xml:space="preserve">
-    <value>一時停止</value>
+    <value>Pause</value>
   </data>
   <data name="LogFormatResumed" xml:space="preserve">
-    <value>再開</value>
+    <value>Resume</value>
   </data>
   <data name="LogFormatSuppressUpdating" xml:space="preserve">
-    <value>更新禁止に設定されています。</value>
+    <value>Update prohibited</value>
   </data>
   <data name="LogFormatWaitLocked" xml:space="preserve">
-    <value>{0}の終了を待っています。</value>
+    <value>Waiting for {0}</value>
   </data>
 </root>

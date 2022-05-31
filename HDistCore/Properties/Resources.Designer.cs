@@ -61,7 +61,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   中断しました。 に類似しているローカライズされた文字列を検索します。
+        ///   Aborted. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatAborted {
             get {
@@ -70,7 +70,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   {0}を圧縮中 に類似しているローカライズされた文字列を検索します。
+        ///   Compressing {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatCompressing {
             get {
@@ -79,7 +79,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   {0}をコピー中 に類似しているローカライズされた文字列を検索します。
+        ///   Copying {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatCopy {
             get {
@@ -88,7 +88,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   {0}を圧縮コピー中 に類似しているローカライズされた文字列を検索します。
+        ///   Copying {0} (compressed) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatCopyCompressed {
             get {
@@ -106,7 +106,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   {0}の圧縮コピーに失敗しました。通常コピーします。 に類似しているローカライズされた文字列を検索します。
+        ///   {0}: Failed to copy by compressed, start copying normally に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatFailToExtract {
             get {
@@ -115,7 +115,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   ***終了しました*** に類似しているローカライズされた文字列を検索します。
+        ///   ***Finished*** に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatFinished {
             get {
@@ -133,7 +133,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   一時停止 に類似しているローカライズされた文字列を検索します。
+        ///   Pause に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatPaused {
             get {
@@ -142,7 +142,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   再開 に類似しているローカライズされた文字列を検索します。
+        ///   Resume に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatResumed {
             get {
@@ -151,7 +151,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   更新禁止に設定されています。 に類似しているローカライズされた文字列を検索します。
+        ///   Update prohibited に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatSuppressUpdating {
             get {
@@ -160,7 +160,7 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
-        ///   {0}の終了を待っています。 に類似しているローカライズされた文字列を検索します。
+        ///   Waiting for {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatWaitLocked {
             get {

@@ -30,6 +30,7 @@ namespace HCopy
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.panelTop = new System.Windows.Forms.Panel();
             this.labelStatus = new System.Windows.Forms.Label();
             this.labelDestDir = new System.Windows.Forms.Label();
@@ -50,6 +51,7 @@ namespace HCopy
             // 
             // panelTop
             // 
+            resources.ApplyResources(this.panelTop, "panelTop");
             this.panelTop.Controls.Add(this.labelStatus);
             this.panelTop.Controls.Add(this.labelDestDir);
             this.panelTop.Controls.Add(this.labelCompressDir);
@@ -58,135 +60,73 @@ namespace HCopy
             this.panelTop.Controls.Add(this.labelDestDirTitle);
             this.panelTop.Controls.Add(this.labelCompressDirTitle);
             this.panelTop.Controls.Add(this.labelSourceDirTitle);
-            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelTop.Location = new System.Drawing.Point(0, 0);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(624, 80);
-            this.panelTop.TabIndex = 3;
             // 
             // labelStatus
             // 
-            this.labelStatus.AutoSize = true;
-            this.labelStatus.Location = new System.Drawing.Point(65, 61);
-            this.labelStatus.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelStatus, "labelStatus");
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(16, 15);
-            this.labelStatus.TabIndex = 7;
-            this.labelStatus.Text = "...";
             // 
             // labelDestDir
             // 
-            this.labelDestDir.AutoSize = true;
-            this.labelDestDir.Location = new System.Drawing.Point(65, 44);
-            this.labelDestDir.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelDestDir, "labelDestDir");
             this.labelDestDir.Name = "labelDestDir";
-            this.labelDestDir.Size = new System.Drawing.Size(16, 15);
-            this.labelDestDir.TabIndex = 6;
-            this.labelDestDir.Text = "...";
             // 
             // labelCompressDir
             // 
-            this.labelCompressDir.AutoSize = true;
-            this.labelCompressDir.Location = new System.Drawing.Point(65, 27);
-            this.labelCompressDir.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelCompressDir, "labelCompressDir");
             this.labelCompressDir.Name = "labelCompressDir";
-            this.labelCompressDir.Size = new System.Drawing.Size(16, 15);
-            this.labelCompressDir.TabIndex = 5;
-            this.labelCompressDir.Text = "...";
             // 
             // labelSourceDir
             // 
-            this.labelSourceDir.AutoSize = true;
-            this.labelSourceDir.Location = new System.Drawing.Point(65, 10);
-            this.labelSourceDir.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelSourceDir, "labelSourceDir");
             this.labelSourceDir.Name = "labelSourceDir";
-            this.labelSourceDir.Size = new System.Drawing.Size(16, 15);
-            this.labelSourceDir.TabIndex = 4;
-            this.labelSourceDir.Text = "...";
             // 
             // labelStatusTitle
             // 
-            this.labelStatusTitle.AutoSize = true;
-            this.labelStatusTitle.Location = new System.Drawing.Point(22, 61);
-            this.labelStatusTitle.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelStatusTitle, "labelStatusTitle");
             this.labelStatusTitle.Name = "labelStatusTitle";
-            this.labelStatusTitle.Size = new System.Drawing.Size(43, 15);
-            this.labelStatusTitle.TabIndex = 3;
-            this.labelStatusTitle.Text = "状況：";
-            this.labelStatusTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelDestDirTitle
             // 
-            this.labelDestDirTitle.AutoSize = true;
-            this.labelDestDirTitle.Location = new System.Drawing.Point(9, 44);
-            this.labelDestDirTitle.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelDestDirTitle, "labelDestDirTitle");
             this.labelDestDirTitle.Name = "labelDestDirTitle";
-            this.labelDestDirTitle.Size = new System.Drawing.Size(56, 15);
-            this.labelDestDirTitle.TabIndex = 2;
-            this.labelDestDirTitle.Text = "コピー先：";
-            this.labelDestDirTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelCompressDirTitle
             // 
-            this.labelCompressDirTitle.AutoSize = true;
-            this.labelCompressDirTitle.Location = new System.Drawing.Point(14, 27);
-            this.labelCompressDirTitle.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelCompressDirTitle, "labelCompressDirTitle");
             this.labelCompressDirTitle.Name = "labelCompressDirTitle";
-            this.labelCompressDirTitle.Size = new System.Drawing.Size(51, 15);
-            this.labelCompressDirTitle.TabIndex = 1;
-            this.labelCompressDirTitle.Text = "(圧縮)：";
-            this.labelCompressDirTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // labelSourceDirTitle
             // 
-            this.labelSourceDirTitle.AutoSize = true;
-            this.labelSourceDirTitle.Location = new System.Drawing.Point(9, 10);
-            this.labelSourceDirTitle.Margin = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            resources.ApplyResources(this.labelSourceDirTitle, "labelSourceDirTitle");
             this.labelSourceDirTitle.Name = "labelSourceDirTitle";
-            this.labelSourceDirTitle.Size = new System.Drawing.Size(56, 15);
-            this.labelSourceDirTitle.TabIndex = 0;
-            this.labelSourceDirTitle.Text = "コピー元：";
-            this.labelSourceDirTitle.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // panelBottom
             // 
+            resources.ApplyResources(this.panelBottom, "panelBottom");
             this.panelBottom.Controls.Add(this.buttonQuit);
             this.panelBottom.Controls.Add(this.buttonPause);
-            this.panelBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBottom.Location = new System.Drawing.Point(0, 282);
             this.panelBottom.Name = "panelBottom";
-            this.panelBottom.Size = new System.Drawing.Size(624, 41);
-            this.panelBottom.TabIndex = 5;
             // 
             // buttonQuit
             // 
-            this.buttonQuit.Location = new System.Drawing.Point(316, 6);
+            resources.ApplyResources(this.buttonQuit, "buttonQuit");
             this.buttonQuit.Name = "buttonQuit";
-            this.buttonQuit.Size = new System.Drawing.Size(85, 23);
-            this.buttonQuit.TabIndex = 1;
-            this.buttonQuit.Text = "終了中断(5)";
             this.buttonQuit.UseVisualStyleBackColor = true;
             this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
             // 
             // buttonPause
             // 
-            this.buttonPause.Location = new System.Drawing.Point(225, 6);
+            resources.ApplyResources(this.buttonPause, "buttonPause");
             this.buttonPause.Name = "buttonPause";
-            this.buttonPause.Size = new System.Drawing.Size(85, 23);
-            this.buttonPause.TabIndex = 0;
-            this.buttonPause.Text = "一時停止";
             this.buttonPause.UseVisualStyleBackColor = true;
             this.buttonPause.Click += new System.EventHandler(this.buttonPause_Click);
             // 
             // textBoxLog
             // 
-            this.textBoxLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxLog.Location = new System.Drawing.Point(0, 80);
-            this.textBoxLog.Multiline = true;
+            resources.ApplyResources(this.textBoxLog, "textBoxLog");
             this.textBoxLog.Name = "textBoxLog";
-            this.textBoxLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLog.Size = new System.Drawing.Size(624, 202);
-            this.textBoxLog.TabIndex = 6;
             // 
             // timerAutoQuit
             // 
@@ -195,14 +135,12 @@ namespace HCopy
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(624, 323);
             this.Controls.Add(this.textBoxLog);
             this.Controls.Add(this.panelBottom);
             this.Controls.Add(this.panelTop);
             this.Name = "MainForm";
-            this.Text = "HCopy";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
