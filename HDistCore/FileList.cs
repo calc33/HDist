@@ -331,7 +331,7 @@ namespace HDistCore
                     switch (strs.Length)
                     {
                         case 2:
-                            _list.Add(new FileEntry(this, strs[2], strs[0], len));
+                            _list.Add(new FileEntry(this, strs[1], strs[0], len));
                             break;
                         case 3:
                             if (!long.TryParse(strs[1].Trim(), out len))
