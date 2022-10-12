@@ -16,6 +16,7 @@ namespace HDistCore
             private FileList _owner;
             public string FileName { get; set; }
             public string Checksum { get; set; }
+            public long Size { get; set; }
 
             public string GetChecksum(string directory)
             {
@@ -32,14 +33,33 @@ namespace HDistCore
                 return Convert.ToBase64String(sha.Hash);
             }
 
+            public static long GetSize(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    return -1;
+                }
+                return new FileInfo(path).Length;
+            }
+
+            public static long GetSize(string directory, string filename)
+            {
+                string path = Path.Combine(directory, filename);
+                if (!File.Exists(path))
+                {
+                    return -1;
+                }
+                return new FileInfo(path).Length;
+            }
+
             public bool IsModified(string directory)
             {
-                return Checksum != GetChecksum(directory);
+                return (Size != -1 && Size != GetSize(directory, FileName)) || Checksum != GetChecksum(directory);
             }
 
             public void Write(TextWriter writer)
             {
-                writer.WriteLine(string.Format("{0}\t{1}", GetChecksum(_owner.BaseDirectory), FileName));
+                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), GetSize(_owner.BaseDirectory, FileName), FileName));
             }
 
             private const string CompressExtenstion = ".bz2";
@@ -143,11 +163,12 @@ namespace HDistCore
                 _owner.OnLog(new LogEventArgs(status, category, FileName, message));
             }
 
-            public FileEntry(FileList owner, string filename, string checksum)
+            public FileEntry(FileList owner, string filename, string checksum, long size)
             {
                 _owner = owner;
                 FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
                 Checksum = checksum;
+                Size = size;
             }
 
             public FileEntry(FileList owner, string filename)
@@ -155,6 +176,7 @@ namespace HDistCore
                 _owner = owner;
                 FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
                 Checksum = GetChecksum(_owner.BaseDirectory);
+                Size = GetSize(_owner.BaseDirectory, FileName);
             }
 
             public int CompareTo(object obj)

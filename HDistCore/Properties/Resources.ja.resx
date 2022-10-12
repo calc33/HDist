@@ -138,6 +138,9 @@
   <data name="LogFormatFinished" xml:space="preserve">
     <value>***終了しました***</value>
   </data>
+  <data name="LogFormatInvalidChecksumEntry" xml:space="preserve">
+    <value>{0}: {1}行目の読み込みに失敗しました</value>
+  </data>
   <data name="LogFormatNoMessage" xml:space="preserve">
     <value>{0}</value>
   </data>

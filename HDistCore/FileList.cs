@@ -316,6 +316,7 @@ namespace HDistCore
         {
             FileName = filename;
             BaseDirectory = baseDir;
+            int line = 1;
             using (StreamReader reader = new StreamReader(filename, FileEncoding))
             {
                 while (!reader.EndOfStream)
@@ -326,9 +327,22 @@ namespace HDistCore
                         continue;
                     }
                     string[] strs = s.Split('\t');
-                    if (2 <= strs.Length)
+                    long len = -1;
+                    switch (strs.Length)
                     {
-                        _list.Add(new FileEntry(this, strs[1], strs[0]));
+                        case 2:
+                            _list.Add(new FileEntry(this, strs[2], strs[0], len));
+                            break;
+                        case 3:
+                            if (!long.TryParse(strs[1].Trim(), out len))
+                            {
+                                len = -1;
+                            }
+                            _list.Add(new FileEntry(this, strs[2], strs[0], len));
+                            break;
+                        default:
+                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, filename, line.ToString()));
+                            break;
                     }
                 }
             }

@@ -27,6 +27,7 @@ namespace HDistCore
         Resumed,
         Finished,
         SuppressUpdating,
+        InvalidChecksumEntry,
     }
     public class LogEventArgs : EventArgs
     {
@@ -59,6 +60,7 @@ namespace HDistCore
             { LogCategory.Resumed, Properties.Resources.LogFormatResumed },
             { LogCategory.Finished, Properties.Resources.LogFormatFinished },
             { LogCategory.SuppressUpdating, Properties.Resources.LogFormatSuppressUpdating },
+            { LogCategory.InvalidChecksumEntry, Properties.Resources.LogFormatInvalidChecksumEntry },
         };
 
         public static string GetMessageFormat(LogCategory category)

@@ -138,6 +138,9 @@
   <data name="LogFormatFinished" xml:space="preserve">
     <value>***Finished***</value>
   </data>
+  <data name="LogFormatInvalidChecksumEntry" xml:space="preserve">
+    <value>{0}: Fail to read at line {1}</value>
+  </data>
   <data name="LogFormatNoMessage" xml:space="preserve">
     <value>{0}</value>
   </data>
