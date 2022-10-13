@@ -137,7 +137,7 @@ namespace HDistCore
             {
                 foreach (FileEntry entry in _list)
                 {
-                    writer.WriteLine(entry.GetChecksum(BaseDirectory) + "\t" + entry.FileName);
+                    entry.Write(writer);
                 }
             }
             FileAttributes attr = File.GetAttributes(filename);
