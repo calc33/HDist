@@ -61,6 +61,15 @@ namespace HDistCore.Properties {
         }
         
         /// <summary>
+        ///   &quot;{1}&quot; not found in &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ErrorChecksumNotFound {
+            get {
+                return ResourceManager.GetString("ErrorChecksumNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Aborted. に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string LogFormatAborted {

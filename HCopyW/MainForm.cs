@@ -526,7 +526,16 @@ namespace HCopy
                     StartAutoQuit();
                     return;
                 }
-                _executingFileList = FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
+                try
+                {
+                    _executingFileList = FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
+                }
+                catch (ApplicationException t)
+                {
+                    Log(LogStatus.Error, LogCategory.Exception, t.Message, null);
+                    StartAutoQuit();
+                    return;
+                }
                 _executingFileList.Log += FileList_Log;
                 _executingFileList.WaitUnlocked(WaitFile);
                 _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(); EndThread(); });

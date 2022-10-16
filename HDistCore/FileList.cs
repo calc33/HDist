@@ -133,13 +133,13 @@ namespace HDistCore
 
         public void SaveToFile(string filename)
         {
-            using (StreamWriter writer = new StreamWriter(filename, false, FileEncoding))
+            string path = Path.GetTempFileName();
+            using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
-                foreach (FileEntry entry in _list)
-                {
-                    entry.Write(writer);
-                }
+                SaveToStream(stream);
             }
+            File.Delete(filename);
+            File.Move(path, filename);
             FileAttributes attr = File.GetAttributes(filename);
             File.SetAttributes(filename, attr | FileAttributes.Hidden);
         }
@@ -458,6 +458,10 @@ namespace HDistCore
         }
         public static FileList LoadFromFile(string directory, string filename, string compressDirectory, string destinationDirectory)
         {
+            if (!File.Exists(filename))
+            {
+                throw new ApplicationException(string.Format(Properties.Resources.ErrorChecksumNotFound, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
+            }
             return new FileList(directory, filename)
             {
                 CompressedDirectory = compressDirectory,

@@ -57,9 +57,16 @@ namespace HDistCore
                 return (Size != -1 && Size != GetSize(directory, FileName)) || Checksum != GetChecksum(directory);
             }
 
+            private string SizeStr(long size)
+            {
+                string s = size.ToString();
+                return s.PadLeft(9);
+            }
+
             public void Write(TextWriter writer)
             {
-                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), GetSize(_owner.BaseDirectory, FileName), FileName));
+                string s = SizeStr(GetSize(_owner.BaseDirectory, FileName));
+                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), s, FileName));
             }
 
             private const string CompressExtenstion = ".bz2";
