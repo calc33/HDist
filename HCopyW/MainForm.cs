@@ -38,9 +38,13 @@ namespace HCopy
         private bool _umStatusPosted = false;
         private bool _umLogPosted = false;
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string WaitFile { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string RunFile { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string RunParam { get; set; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string DestinationDir
         {
             get { return _destinationDir; }
@@ -54,6 +58,7 @@ namespace HCopy
                 UpdateLabels();
             }
         }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string SourceDir
         {
             get { return _sourceDir; }
@@ -67,6 +72,7 @@ namespace HCopy
                 UpdateLabels();
             }
         }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string CompressDir
         {
             get { return _compressDir; }
@@ -156,6 +162,7 @@ namespace HCopy
             _logWriter.WriteLine(string.Format("[{0:HH:mm:ss}({1})] Start {2} {3}", DateTime.Now, _processId, p.StartInfo.FileName, p.StartInfo.Arguments));
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string LogFile
         {
             get { return _logFile; }
