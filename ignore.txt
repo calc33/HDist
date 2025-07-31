@@ -1,3 +1,4 @@
 \ref\
 .pdb
-.dev.json
+.deps.json
+.runtimeconfig.json
