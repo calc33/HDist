@@ -48,6 +48,19 @@ namespace HDist.Core
         }
         public string? CompressedDirectory { get; set; }
         public string DestinationDirectory { get; set; }
+
+        internal List<string> _requestHeaders = new();
+
+        public void AddRequestHeader(string header)
+        {
+            _requestHeaders.Add(header);
+        }
+
+        public void AddRequestHeaders(IEnumerable<string> headers)
+        {
+            _requestHeaders.AddRange(headers);
+        }
+
         /// <summary>
         /// _checksum.sha のSHA1チェックサム値
         /// </summary>

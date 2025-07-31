@@ -19,7 +19,8 @@ namespace HCopy
         private readonly string DestinationDir;
         private readonly string SourceUri;
         private readonly string? CompressDir;
-        
+        private readonly List<string> _requestHeaders = new();
+
         private static void ShowUsage(int exitCode)
         {
             Console.Error.Write(Properties.Resources.Usage);
@@ -112,6 +113,24 @@ namespace HCopy
                             i++;
                             CompressDir = args[i];
                             break;
+                        case "--header":
+                            i++;
+                            _requestHeaders.Add(args[i]);
+                            break;
+                        case "--header-file":
+                            i++;
+                            using (StreamReader reader = new StreamReader(args[i], Encoding.UTF8))
+                            {
+                                for (string? s = reader.ReadLine(); s != null; s = reader.ReadLine())
+                                {
+                                    s = s.Trim();
+                                    if (!string.IsNullOrEmpty(s))
+                                    {
+                                        _requestHeaders.Add(s);
+                                    }
+                                }
+                            }
+                            break;
                         case "--help":
                         case "/?":
                             ShowUsage(0);   // ShowUsage中でプログラムが終了するので以降の処理はない
@@ -156,6 +175,7 @@ namespace HCopy
                     return;
                 }
                 FileList list = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
+                list.AddRequestHeaders(_requestHeaders);
                 list.Log += Checksum_Log;
                 list.WaitUnlocked(WaitFile);
                 await list.UpdateFilesAsync();

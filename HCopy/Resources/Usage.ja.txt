@@ -1,5 +1,5 @@
-hcopy <source-dir> <destination-dir> [options]
-hcopyは<source-dir>から _checksum.sha に列挙されたファイルをコピーする。
+hcopy <source-uri> <destination-dir> [options]
+hcopyは<source-uri>から _checksum.sha に列挙されたファイルをコピーする。
 
 Options:
   --wait <file>
@@ -18,7 +18,14 @@ Options:
   --compress <directory>
   -c <directory>
       コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する。
-      相対パスで指定した場合は<source-dir>からの相対パスになる。
+      <source-uri>がfile://の場合のみ有効。
+      相対パスで指定した場合は<source-uri>からの相対パスになる。
+
+  --header <header>
+      <source-uri>がhttp(s) URIの場合、HTTPリクエストにヘッダを追加する。
+
+  --header-file <file>
+      <source-uri>がhttp(s) URIの場合、指定したファイルの内容をHTTPリクエストにヘッダとして追加する。
 
   --help
   /?

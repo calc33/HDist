@@ -95,6 +95,19 @@ namespace HDist.Core
                 return !mod;
             }
 
+            private static bool TrySplitHeader(string header, out string name, out string value)
+            {
+                int pos = header.IndexOf(':');
+                if (pos < 0)
+                {
+                    name = header;
+                    value = string.Empty;
+                    return false;
+                }
+                name = header.Substring(0, pos).Trim();
+                value = header.Substring(pos + 1).Trim();
+                return true;
+            }
             private HttpClient? _httpClient;
             private HttpClient RequireClient()
             {
@@ -103,6 +116,13 @@ namespace HDist.Core
                     _httpClient = new HttpClient();
                     _httpClient.Timeout = TimeSpan.FromSeconds(30);
                     _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                    foreach (string s in _owner._requestHeaders)
+                    {
+                        if (TrySplitHeader(s, out string name, out string value))
+                        {
+                            _httpClient.DefaultRequestHeaders.Add(name, value);
+                        }
+                    }
                 }
                 return _httpClient;
             }

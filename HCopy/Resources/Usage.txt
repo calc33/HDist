@@ -1,5 +1,5 @@
-hcopy <source-dir> <destination-dir> [options]
-hcopy copies files from <source-dir> listed in "_checksum.sha".
+hcopy <source-uri> <destination-dir> [options]
+hcopy copies files from <source-uri> listed in "_checksum.sha".
 
 Options:
   --wait <file>
@@ -17,8 +17,15 @@ Options:
 
   --compress <directory>
   -c <directory>
-      Specify the directory that stores the compressed files for faster copy
-      If specified as a relative path, it will be a relative path from <source-dir>.
+      Specify the directory that stores the compressed files for faster copy.
+      Available only if the source-uri is file://.
+      If specified as a relative path, it will be a relative path from <source-uri>.
+
+  --header <header>
+      When <source-uri> is a http(s) URI, add a header to the HTTP request.
+
+  --header-file <file>
+      When <source-uri> is a http(s) URI, read headers from the specified file.
 
   --help
   /?

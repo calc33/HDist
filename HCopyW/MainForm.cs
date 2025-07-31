@@ -85,6 +85,8 @@ namespace HCopy
             }
         }
 
+        private List<string> _requestHeaders = new();
+
         private string? _logFile = null;
         private string? _actualLogFile = null;
         private TextWriter? _logWriter = null;
@@ -440,6 +442,24 @@ namespace HCopy
                             i++;
                             CompressDir = args[i];
                             break;
+                        case "--header":
+                            i++;
+                            _requestHeaders.Add(args[i]);
+                            break;
+                        case "--header-file":
+                            i++;
+                            using (StreamReader reader = new StreamReader(args[i], Encoding.UTF8))
+                            {
+                                for (string? s = reader.ReadLine(); s != null; s = reader.ReadLine())
+                                {
+                                    s = s.Trim();
+                                    if (!string.IsNullOrEmpty(s))
+                                    {
+                                        _requestHeaders.Add(s);
+                                    }
+                                }
+                            }
+                            break;
                         case "--log":
                         case "-l":
                             i++;
@@ -530,6 +550,7 @@ namespace HCopy
                 try
                 {
                     _executingFileList = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
+                    _executingFileList.AddRequestHeaders(_requestHeaders);
                 }
                 catch (ApplicationException t)
                 {
