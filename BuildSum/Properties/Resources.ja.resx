@@ -126,6 +126,33 @@
   <data name="Error_OptionConfliected" xml:space="preserve">
     <value>--ignoreと--ignore-listを同時に指定できません</value>
   </data>
+  <data name="LogFormatAborted" xml:space="preserve">
+    <value>中断しました。</value>
+  </data>
+  <data name="LogFormatCompressing" xml:space="preserve">
+    <value>{0}を圧縮中</value>
+  </data>
+  <data name="LogFormatException" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="LogFormatFinished" xml:space="preserve">
+    <value>***終了しました***</value>
+  </data>
+  <data name="LogFormatNoMessage" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="LogFormatPaused" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="LogFormatResumed" xml:space="preserve">
+    <value>再開</value>
+  </data>
+  <data name="LogFormatUpdatingChecksum" xml:space="preserve">
+    <value>_checksum.shaを更新しています</value>
+  </data>
+  <data name="LogFormatSuppressUpdating" xml:space="preserve">
+    <value>更新禁止に設定されています。</value>
+  </data>
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>{0}に続くパラメータがありません</value>
   </data>

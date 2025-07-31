@@ -14,7 +14,7 @@ namespace BuildSum
     public partial class FileList: IEnumerable<FileList.FileEntry>
     {
         private const string CHECKSUM_FILE = "_checksum.sha";
-        private const string UPDATED_FILE = "_updated";
+        //private const string UPDATED_FILE = "_updated";
         private static StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
         private static bool _ignoreCase = true;
         public static bool IgnoreCase
@@ -140,206 +140,15 @@ namespace BuildSum
         }
         public void SaveToStream(Stream stream)
         {
+            OnLog(new LogEventArgs(LogStatus.Information, LogCategory.UpdatingChecksum, null, null));
             using StreamWriter writer = new(stream, FileEncoding);
             foreach (FileEntry entry in _list)
             {
+                OnLog(new LogEventArgs(LogStatus.Information, LogCategory.NoMessage, entry.FileName, null));
                 entry.Write(writer);
             }
         }
 
-        //public static bool IsDisabled(string destinationDirectory)
-        //{
-        //    string path = Path.Combine(destinationDirectory, UPDATED_FILE);
-        //    if (string.IsNullOrEmpty(path) || !File.Exists(path))
-        //    {
-        //        return false;
-        //    }
-        //    using StreamReader reader = new(path, Encoding.UTF8);
-        //    string s = reader.ReadToEnd();
-        //    if (!string.IsNullOrEmpty(s))
-        //    {
-        //        s = s.TrimEnd();
-        //    }
-        //    return (s == "-" || s == "noupdate");
-        //}
-
-        //public void UpdateFiles()
-        //{
-        //    bool success = false;
-        //    _aborting = false;
-        //    _pausing = false;
-        //    foreach (FileEntry entry in _list)
-        //    {
-        //        try
-        //        {
-        //            entry.UpdateFile();
-        //        }
-        //        catch (Exception t)
-        //        {
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, entry.FileName, t.Message));
-        //            success = false;
-        //        }
-        //        if (_pausing)
-        //        {
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
-        //            while (_pausing && !_aborting)
-        //            {
-        //                Thread.Sleep(100);
-        //            }
-        //        }
-        //        if (_aborting)
-        //        {
-        //            success = false;
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
-        //            break;
-        //        }
-        //    }
-        //    try
-        //    {
-        //        string path = Path.Combine(DestinationDirectory, UPDATED_FILE);
-        //        if (success)
-        //        {
-        //            using StreamWriter writer = new(path, false, Encoding.UTF8);
-        //            writer.Write(Convert.ToBase64String(Checksum));
-        //        }
-        //        else
-        //        {
-        //            if (File.Exists(path))
-        //            {
-        //                File.Delete(path);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception t)
-        //    {
-        //        OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, UPDATED_FILE, t.Message));
-        //    }
-        //}
-
-        //public void UpdateFiles(string[] files)
-        //{
-        //    _aborting = false;
-        //    _pausing = false;
-        //    foreach (string s in files)
-        //    {
-        //        FileEntry? entry = FindEntry(s);
-        //        if (entry == null)
-        //        {
-        //            continue;
-        //        }
-        //        try
-        //        {
-        //            entry.UpdateFile();
-        //        }
-        //        catch (Exception t)
-        //        {
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Exception, entry.FileName, t.Message));
-        //        }
-        //        if (_pausing)
-        //        {
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
-        //            while (_pausing && !_aborting)
-        //            {
-        //                Thread.Sleep(100);
-        //            }
-        //        }
-        //        if (_aborting)
-        //        {
-        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
-        //            break;
-        //        }
-        //    }
-        //}
-
-        public void Abort()
-        {
-            _aborting = true;
-        }
-
-        public void Pause()
-        {
-            _pausing = true;
-        }
-
-        public void Resume()
-        {
-            _pausing = false;
-        }
-
-        //private bool IsWritable(string path)
-        //{
-        //    if (!File.Exists(path))
-        //    {
-        //        return true;
-        //    }
-        //    try
-        //    {
-        //        using FileStream stream = new(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None); return true;
-        //    }
-        //    catch (IOException)
-        //    {
-        //        return false;
-        //    }
-        //}
-
-        //public void WaitUnlocked(string filename)
-        //{
-        //    if (string.IsNullOrEmpty(filename))
-        //    {
-        //        return;
-        //    }
-        //    string path = Path.Combine(DestinationDirectory, filename);
-        //    if (IsWritable(path))
-        //    {
-        //        return;
-        //    }
-        //    OnLog(new LogEventArgs(LogStatus.Information, LogCategory.WaitLocked, filename, null));
-        //    while (!IsWritable(path))
-        //    {
-        //        Thread.Sleep(100);
-        //    }
-        //}
-
-        internal FileList(string baseDir, string checksumPath)
-        {
-            BaseDirectory = baseDir;
-            ChecksumFileName = checksumPath;
-            int line = 1;
-            using (StreamReader reader = new(checksumPath, FileEncoding))
-            {
-                while (!reader.EndOfStream)
-                {
-                    string? s = reader.ReadLine();
-                    if (string.IsNullOrEmpty(s))
-                    {
-                        continue;
-                    }
-                    string[] strs = s.Split('\t');
-                    long len = -1;
-                    switch (strs.Length)
-                    {
-                        case 2:
-                            _list.Add(new FileEntry(this, strs[1], strs[0], len));
-                            break;
-                        case 3:
-                            if (!long.TryParse(strs[1].Trim(), out len))
-                            {
-                                len = -1;
-                            }
-                            _list.Add(new FileEntry(this, strs[2], strs[0], len));
-                            break;
-                        default:
-                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, checksumPath, line.ToString()));
-                            break;
-                    }
-                }
-            }
-            InvalidateNameToEntry();
-            SHA1 sha = SHA1.Create();
-            using FileStream stream = new(checksumPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            Checksum = sha.ComputeHash(stream);
-        }
-        
         private static bool IsIgnored(string fullPath, string relPath, List<Regex> ignoreNames, bool ignoreHidden)
         {
             if (ignoreHidden && (File.GetAttributes(fullPath) & FileAttributes.Hidden) != 0)
@@ -414,7 +223,7 @@ namespace BuildSum
             return new Regex(buf.ToString());
         }
 
-        internal FileList(string baseDir, IList<string> ignoreNames, bool ignoreHidden)
+        internal FileList(string baseDir, IList<string> ignoreNames, bool ignoreHidden, string? compressDir)
         {
             ChecksumFileName = null;
             BaseDirectory = baseDir;
@@ -427,14 +236,30 @@ namespace BuildSum
             EnumFiles(baseDir, ignores, ignoreHidden);
             _list.Sort();
             Checksum = [];
+            CompressedDirectory = compressDir;
         }
 
         public static FileList CreateByDirectory(string directory, IList<string> ignoreNames, bool ignodeHidden, string? compressDirectory)
         {
-            return new FileList(directory, ignoreNames, ignodeHidden)
+            return new FileList(directory, ignoreNames, ignodeHidden, compressDirectory);
+        }
+
+        public void CompressFiles()
+        {
+            if (string.IsNullOrEmpty(CompressedDirectory))
             {
-                CompressedDirectory = compressDirectory,
-            };
+                return;
+            }
+            OnLog(new LogEventArgs(LogStatus.Information, LogCategory.Compressing, null, null));
+            if (!Directory.Exists(CompressedDirectory))
+            {
+                Directory.CreateDirectory(CompressedDirectory);
+            }
+            foreach (FileEntry entry in _list)
+            {
+                OnLog(new LogEventArgs(LogStatus.Information, LogCategory.NoMessage, entry.FileName, null));
+                entry.CompressFile();
+            }
         }
 
         #region IEnumerable<FileEntry>

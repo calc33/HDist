@@ -16,18 +16,14 @@ namespace BuildSum
     public enum LogCategory
     {
         Exception,
-        Copy,
-        CopyCompressed,
-        FailToExtract,
         Compressing,
         NoMessage,
-        WaitLocked,
-        Aborted,
-        Paused,
-        Resumed,
-        Finished,
-        SuppressUpdating,
-        InvalidChecksumEntry,
+        //Aborted,
+        //Paused,
+        //Resumed,
+        //Finished,
+        //SuppressUpdating,
+        UpdatingChecksum,
     }
     public class LogEventArgs(LogStatus status, LogCategory category, string? filename, string? message) : EventArgs
     {
@@ -42,18 +38,14 @@ namespace BuildSum
         private static readonly Dictionary<LogCategory, string> CategoryToMessage = new()
         {
             { LogCategory.Exception, Properties.Resources.LogFormatException },
-            { LogCategory.Copy, Properties.Resources.LogFormatCopy },
-            { LogCategory.CopyCompressed, Properties.Resources.LogFormatCopyCompressed },
-            { LogCategory.FailToExtract, Properties.Resources.LogFormatFailToExtract },
-            { LogCategory.Compressing, Properties.Resources.LogFormatCopyCompressed },
+            { LogCategory.Compressing, Properties.Resources.LogFormatCompressing },
             { LogCategory.NoMessage, Properties.Resources.LogFormatNoMessage },
-            { LogCategory.WaitLocked, Properties.Resources.LogFormatWaitLocked },
-            { LogCategory.Aborted, Properties.Resources.LogFormatAborted },
-            { LogCategory.Paused, Properties.Resources.LogFormatPaused },
-            { LogCategory.Resumed, Properties.Resources.LogFormatResumed },
-            { LogCategory.Finished, Properties.Resources.LogFormatFinished },
-            { LogCategory.SuppressUpdating, Properties.Resources.LogFormatSuppressUpdating },
-            { LogCategory.InvalidChecksumEntry, Properties.Resources.LogFormatInvalidChecksumEntry },
+            //{ LogCategory.Aborted, Properties.Resources.LogFormatAborted },
+            //{ LogCategory.Paused, Properties.Resources.LogFormatPaused },
+            //{ LogCategory.Resumed, Properties.Resources.LogFormatResumed },
+            //{ LogCategory.Finished, Properties.Resources.LogFormatFinished },
+            //{ LogCategory.SuppressUpdating, Properties.Resources.LogFormatSuppressUpdating },
+            { LogCategory.UpdatingChecksum, Properties.Resources.LogFormatUpdatingChecksum },
         };
 
         public static string GetMessageFormat(LogCategory category)

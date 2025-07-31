@@ -126,6 +126,33 @@
   <data name="Error_OptionConfliected" xml:space="preserve">
     <value>--ignore and --ignore-list cannot be specified at the same time</value>
   </data>
+  <data name="LogFormatAborted" xml:space="preserve">
+    <value>Aborted.</value>
+  </data>
+  <data name="LogFormatCompressing" xml:space="preserve">
+    <value>Compressing {0}</value>
+  </data>
+  <data name="LogFormatException" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="LogFormatFinished" xml:space="preserve">
+    <value>***Finished***</value>
+  </data>
+  <data name="LogFormatNoMessage" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="LogFormatPaused" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="LogFormatResumed" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="LogFormatUpdatingChecksum" xml:space="preserve">
+    <value>Updating _checksum.sha.</value>
+  </data>
+  <data name="LogFormatSuppressUpdating" xml:space="preserve">
+    <value>Update prohibited</value>
+  </data>
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>There is no parameter following {0}</value>
   </data>

@@ -8,3 +8,4 @@ obj
 /_checksum.sha
 launchSettings.json
 /Release
+*.user

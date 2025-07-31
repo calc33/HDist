@@ -88,6 +88,87 @@ namespace BuildSum.Properties {
         }
         
         /// <summary>
+        ///   Aborted. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatAborted {
+            get {
+                return ResourceManager.GetString("LogFormatAborted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Compressing {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatCompressing {
+            get {
+                return ResourceManager.GetString("LogFormatCompressing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatException {
+            get {
+                return ResourceManager.GetString("LogFormatException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ***Finished*** に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatFinished {
+            get {
+                return ResourceManager.GetString("LogFormatFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatNoMessage {
+            get {
+                return ResourceManager.GetString("LogFormatNoMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Pause に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatPaused {
+            get {
+                return ResourceManager.GetString("LogFormatPaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Resume に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatResumed {
+            get {
+                return ResourceManager.GetString("LogFormatResumed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Update prohibited に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatSuppressUpdating {
+            get {
+                return ResourceManager.GetString("LogFormatSuppressUpdating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Updating _checksum.sha. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatUpdatingChecksum {
+            get {
+                return ResourceManager.GetString("LogFormatUpdatingChecksum", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   There is no parameter following {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string ParameterRequiedFmt {

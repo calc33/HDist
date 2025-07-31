@@ -135,18 +135,6 @@ namespace BuildSum
             }
         }
 
-        private void CompressFiles(FileList list)
-        {
-            if (string.IsNullOrEmpty(CompressDir))
-            {
-                return;
-            }
-            foreach (FileList.FileEntry entry in list)
-            {
-                entry.CompressFile();
-            }
-        }
-
         public void Run()
         {
             if (!Directory.Exists(TargetDir))
@@ -156,7 +144,7 @@ namespace BuildSum
             FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, IgnoreHidden, CompressDir);
             list.Log += FileList_Log;
             list.SaveChecksum();
-            CompressFiles(list);
+            list.CompressFiles();
         }
 
     }
