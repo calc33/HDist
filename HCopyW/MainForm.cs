@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using HDistCore;
+using HDist.Core;
 
 namespace HCopy
 {
@@ -22,13 +22,13 @@ namespace HCopy
             [DllImport("User32.dll")]
             public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
         }
-        private string _destinationDir;
-        private string _sourceDir;
-        private string _compressDir;
-        private string _statusText;
+        private string? _destinationDir;
+        private Uri? _sourceUri;
+        private string? _compressDir;
+        private string _statusText = string.Empty;
         private bool _isRan = false;
-        private List<string> _logStore = new List<string>();
-        private object _logStoreLock = new object();
+        private List<string> _logStore = [];
+        private readonly Lock _logStoreLock = new();
         private const uint UM_STATUS = 0x4560;
         private const uint UM_LOG = 0x4561;
         private const uint UM_FINISH = 0x4562;
@@ -39,13 +39,13 @@ namespace HCopy
         private bool _umLogPosted = false;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string WaitFile { get; set; }
+        public string? WaitFile { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string RunFile { get; set; }
+        public string? RunFile { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string RunParam { get; set; }
+        public string? RunParam { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string DestinationDir
+        public string? DestinationDir
         {
             get { return _destinationDir; }
             set
@@ -59,21 +59,19 @@ namespace HCopy
             }
         }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string SourceDir
+        public bool IsFileUri { get => _sourceUri?.IsFile ?? true; }
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public string? SourceUri
         {
-            get { return _sourceDir; }
+            get { return _sourceUri?.AbsoluteUri; }
             set
             {
-                if (_sourceDir == value)
-                {
-                    return;
-                }
-                _sourceDir = value;
+                _sourceUri = !string.IsNullOrEmpty(value) ? new Uri(value, UriKind.Absolute) : null;
                 UpdateLabels();
             }
         }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string CompressDir
+        public string? CompressDir
         {
             get { return _compressDir; }
             set
@@ -87,11 +85,11 @@ namespace HCopy
             }
         }
 
-        private string _logFile = null;
-        private string _actualLogFile = null;
-        private TextWriter _logWriter = null;
+        private string? _logFile = null;
+        private string? _actualLogFile = null;
+        private TextWriter? _logWriter = null;
         private int _processId;
-        private static Dictionary<char, string> ParamCharToValue = new Dictionary<char, string>()
+        private readonly static Dictionary<char, string> ParamCharToValue = new()
         {
             {'Y', DateTime.Today.Year.ToString("D4") },
             {'M', DateTime.Today.Month.ToString("D2") },
@@ -99,23 +97,23 @@ namespace HCopy
             {'H', DateTime.Now.Hour.ToString("D2") },
             {'N', DateTime.Now.Minute.ToString("D2") },
             {'S', DateTime.Now.Second.ToString("D2") },
-            {'P', Process.GetCurrentProcess().Id.ToString() },
+            {'P', Environment.ProcessId.ToString() },
             {'%', "%" },
         };
         private void UpdateActualLogFile()
         {
-            StringBuilder buf = new StringBuilder();
-            if (string.IsNullOrEmpty(_logFile))
+            StringBuilder buf = new();
+            if (string.IsNullOrEmpty(LogFile))
             {
                 _actualLogFile = null;
+                return;
             }
             bool wasPercent = false;
-            foreach (char c in _logFile)
+            foreach (char c in LogFile)
             {
                 if (wasPercent)
                 {
-                    string s;
-                    if (ParamCharToValue.TryGetValue(char.ToUpper(c), out s))
+                    if (ParamCharToValue.TryGetValue(char.ToUpper(c), out string? s))
                     {
                         buf.Append(s);
                     }
@@ -151,7 +149,7 @@ namespace HCopy
             {
                 return;
             }
-            string dir = Path.GetDirectoryName(_actualLogFile);
+            string? dir = Path.GetDirectoryName(_actualLogFile);
             if (!string.IsNullOrEmpty(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -163,7 +161,7 @@ namespace HCopy
         }
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public string LogFile
+        public string? LogFile
         {
             get { return _logFile; }
             set
@@ -178,7 +176,7 @@ namespace HCopy
             }
         }
 
-        private static string DisplayText(string value)
+        private static string DisplayText(string? value)
         {
             if (string.IsNullOrEmpty(value))
             {
@@ -189,9 +187,9 @@ namespace HCopy
 
         private void UpdateLabels()
         {
-            labelSourceDir.Text = DisplayText(_sourceDir);
-            labelCompressDir.Text = DisplayText(_compressDir);
-            labelDestDir.Text = DisplayText(_destinationDir);
+            labelSourceDir.Text = DisplayText(SourceUri);
+            labelCompressDir.Text = DisplayText(CompressDir);
+            labelDestDir.Text = DisplayText(DestinationDir);
         }
 
         private void UpdateStatus()
@@ -371,7 +369,7 @@ namespace HCopy
             }
         }
 
-        private void Log(LogStatus status, LogCategory category, string filename, string message)
+        private void Log(LogStatus status, LogCategory category, string? filename, string? message)
         {
             string msg = LogResource.GetMessage(category, filename, message);
             switch (status)
@@ -389,36 +387,10 @@ namespace HCopy
             }
         }
 
-        private void FileList_Log(object sender, LogEventArgs e)
+        // 'sender' パラメータに null 許容を追加
+        private void FileList_Log(object? sender, LogEventArgs e)
         {
             Log(e.Status, e.Category, e.FileName, e.Message);
-        }
-
-        private void WaitLocked()
-        {
-            if (string.IsNullOrEmpty(WaitFile))
-            {
-                return;
-            }
-            string path = Path.Combine(DestinationDir, WaitFile);
-            if (!File.Exists(path))
-            {
-                return;
-            }
-            bool locked;
-            do
-            {
-                try
-                {
-                    using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) { }
-                    locked = false;
-                }
-                catch (IOException)
-                {
-                    locked = true;
-                    Thread.Sleep(100);
-                }
-            } while (locked);
         }
 
         private void RunProgram()
@@ -429,7 +401,7 @@ namespace HCopy
             }
             try
             {
-                Process.Start(RunFile, RunParam);
+                Process.Start(RunFile, RunParam ?? string.Empty);
             }
             catch (Exception t)
             {
@@ -440,7 +412,7 @@ namespace HCopy
 
         public void InitByArgs(string[] args)
         {
-            List<string> paths = new List<string>();
+            List<string> paths = new();
             for (int i = 0; i < args.Length; i++)
             {
                 string a = args[i];
@@ -479,7 +451,7 @@ namespace HCopy
 
                             break;
                         default:
-                            if (a.StartsWith("-"))
+                            if (a.StartsWith('-'))
                             {
                                 Error(string.Format(Properties.Resources.InvalidOptionFmt, a));
                             }
@@ -495,16 +467,20 @@ namespace HCopy
             switch (paths.Count)
             {
                 case 1:
-                    SourceDir = paths[0];
+                    SourceUri = paths[0];
                     DestinationDir = Directory.GetCurrentDirectory();
                     break;
                 case 2:
-                    SourceDir = paths[0];
+                    SourceUri = paths[0];
                     DestinationDir = paths[1];
                     break;
                 default:
                     ShowUsage();
                     break;
+            }
+            if (!IsFileUri && string.IsNullOrEmpty(CompressDir))
+            {
+                Log(LogStatus.Warning, LogCategory.Compressing, null, Properties.Resources.CompressModeIgnored);
             }
         }
 
@@ -520,11 +496,29 @@ namespace HCopy
             _executingTask = null;
         }
 
-        private FileList _executingFileList = null;
-        private Task _executingTask = null;
+        private FileList? _executingFileList = null;
+        private Task? _executingTask = null;
+
+
+        private async Task RunUpdateFilesAsync()
+        {
+            if (_executingFileList == null)
+            {
+                return;
+            }
+            StartThread();
+            await _executingFileList.UpdateFilesAsync();
+            EndThread();
+        }
 
         public void Run()
         {
+            if (string.IsNullOrEmpty(SourceUri) || string.IsNullOrEmpty(DestinationDir))
+            {
+                Log(LogStatus.Error, LogCategory.Exception, null, Properties.Resources.ParameterRequiedFmt);
+                StartAutoQuit();
+                return;
+            }
             try
             {
                 if (FileList.IsDisabled(DestinationDir))
@@ -535,7 +529,7 @@ namespace HCopy
                 }
                 try
                 {
-                    _executingFileList = FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
+                    _executingFileList = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
                 }
                 catch (ApplicationException t)
                 {
@@ -545,7 +539,7 @@ namespace HCopy
                 }
                 _executingFileList.Log += FileList_Log;
                 _executingFileList.WaitUnlocked(WaitFile);
-                _executingTask = Task.Run(() => { StartThread(); _executingFileList.UpdateFiles(); EndThread(); });
+                _executingTask = RunUpdateFilesAsync();
             }
             finally
             {
@@ -579,7 +573,7 @@ namespace HCopy
             {
                 return;
             }
-            Task task = _executingTask;
+            Task? task = _executingTask;
             if (task == null || task.IsCompleted)
             {
                 return;
@@ -590,7 +584,7 @@ namespace HCopy
                 e.Cancel = true;
             }
             _quitOnFinish = true;
-            FileList list = _executingFileList;
+            FileList? list = _executingFileList;
             if (list != null)
             {
                 list.Abort();
@@ -614,7 +608,7 @@ namespace HCopy
 
         private void buttonPause_Click(object sender, EventArgs e)
         {
-            FileList list = _executingFileList;
+            FileList? list = _executingFileList;
             if (list == null)
             {
                 return;
@@ -639,7 +633,7 @@ namespace HCopy
                 return;
             }
             _quitOnFinish = true;
-            FileList list = _executingFileList;
+            FileList? list = _executingFileList;
             if (list != null)
             {
                 list.Abort();

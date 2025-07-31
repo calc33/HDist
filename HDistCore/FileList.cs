@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace HDistCore
+namespace HDist.Core
 {
     public partial class FileList: IEnumerable<FileList.FileEntry>
     {
@@ -37,36 +37,43 @@ namespace HDistCore
 
         public Encoding FileEncoding { get; set; } = Encoding.UTF8;
 
-        public string FileName { get; set; }
-        public string BaseDirectory { get; set; }
-        public string CompressedDirectory { get; set; }
+        public string ChecksumFileName { get; set; }
+
+        private Uri _baseUri;
+        public bool IsFileUri { get => _baseUri.IsFile; }
+        public string BaseUri
+        {
+            get { return _baseUri.AbsoluteUri; }
+            set { _baseUri = new Uri(value, UriKind.Absolute); }
+        }
+        public string? CompressedDirectory { get; set; }
         public string DestinationDirectory { get; set; }
         /// <summary>
         /// _checksum.sha のSHA1チェックサム値
         /// </summary>
         public byte[] Checksum { get; }
-        private List<FileEntry> _list = new List<FileEntry>();
-        //private Dictionary<string, FileEntry> _nameToEntry = new Dictionary<string, FileEntry>();
-        private Dictionary<string, FileEntry> _nameToEntry;
-        private object _nameToEntryLock = new object();
+        private readonly List<FileEntry> _list = new();
+        private Dictionary<string, FileEntry>? _nameToEntry = null;
+        private readonly Lock _nameToEntryLock = new();
 
-        private void UpdateNameToEntry()
+        private Dictionary<string, FileEntry> RequireNameToEntry()
         {
             if (_nameToEntry != null)
             {
-                return;
+                return _nameToEntry;
             }
             lock (_nameToEntryLock)
             {
                 if (_nameToEntry != null)
                 {
-                    return;
+                    return _nameToEntry;
                 }
-                _nameToEntry = new Dictionary<string, FileEntry>();
+                _nameToEntry = [];
                 foreach (FileEntry entry in _list)
                 {
                     _nameToEntry[Treat(entry.FileName)] = entry;
                 }
+                return _nameToEntry;
             }
         }
 
@@ -85,7 +92,7 @@ namespace HDistCore
         
         public bool Pausing { get { return _pausing; } }
 
-        public event EventHandler<LogEventArgs> Log;
+        public event EventHandler<LogEventArgs>? Log;
 
         public void OnLog(LogEventArgs e)
         {
@@ -102,57 +109,51 @@ namespace HDistCore
             }
         }
 
-        public FileEntry FindEntry(string filename)
+        public FileEntry? FindEntry(string filename)
         {
-            UpdateNameToEntry();
-            FileEntry entry;
-            if (_nameToEntry.TryGetValue(Treat(filename), out entry))
+            if (RequireNameToEntry().TryGetValue(Treat(filename), out FileEntry? entry))
             {
                 return entry;
             }
             return null;
         }
 
-        public FileEntry FindEntry(string targetDirectory, string filename)
+        public FileEntry? FindEntry(string targetDirectory, string filename)
         {
-            UpdateNameToEntry();
             string path = Path.GetRelativePath(targetDirectory, filename);
-            FileEntry entry;
-            if (_nameToEntry.TryGetValue(Treat(path), out entry))
+            if (RequireNameToEntry().TryGetValue(Treat(path), out FileEntry? entry))
             {
                 return entry;
             }
             return null;
         }
 
-        public void SaveChecksum()
-        {
-            string path = Path.Combine(BaseDirectory, CHECKSUM_FILE);
-            SaveToFile(path);
-        }
+        //public void SaveChecksum()
+        //{
+        //    string path = Path.Combine(BaseUri, CHECKSUM_FILE);
+        //    SaveToFile(path);
+        //}
 
-        public void SaveToFile(string filename)
-        {
-            string path = Path.GetTempFileName();
-            using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-            {
-                SaveToStream(stream);
-            }
-            File.Delete(filename);
-            File.Move(path, filename);
-            FileAttributes attr = File.GetAttributes(filename);
-            File.SetAttributes(filename, attr | FileAttributes.Hidden);
-        }
-        public void SaveToStream(Stream stream)
-        {
-            using (StreamWriter writer = new StreamWriter(stream, FileEncoding))
-            {
-                foreach (FileEntry entry in _list)
-                {
-                    entry.Write(writer);
-                }
-            }
-        }
+        //public void SaveToFile(string filename)
+        //{
+        //    string path = Path.GetTempFileName();
+        //    using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+        //    {
+        //        SaveToStream(stream);
+        //    }
+        //    File.Delete(filename);
+        //    File.Move(path, filename);
+        //    FileAttributes attr = File.GetAttributes(filename);
+        //    File.SetAttributes(filename, attr | FileAttributes.Hidden);
+        //}
+        //public void SaveToStream(Stream stream)
+        //{
+        //    using StreamWriter writer = new(stream, FileEncoding);
+        //    foreach (FileEntry entry in _list)
+        //    {
+        //        entry.Write(writer);
+        //    }
+        //}
 
         public static bool IsDisabled(string destinationDirectory)
         {
@@ -161,18 +162,16 @@ namespace HDistCore
             {
                 return false;
             }
-            using (StreamReader reader = new StreamReader(path, Encoding.UTF8))
+            using StreamReader reader = new(path, Encoding.UTF8);
+            string s = reader.ReadToEnd();
+            if (!string.IsNullOrEmpty(s))
             {
-                string s = reader.ReadToEnd();
-                if (!string.IsNullOrEmpty(s))
-                {
-                    s = s.TrimEnd();
-                }
-                return (s == "-" || s == "noupdate");
+                s = s.TrimEnd();
             }
+            return (s == "-" || s == "noupdate");
         }
 
-        public void UpdateFiles()
+        public async Task UpdateFilesAsync()
         {
             bool success = false;
             _aborting = false;
@@ -181,7 +180,7 @@ namespace HDistCore
             {
                 try
                 {
-                    entry.UpdateFile();
+                    await entry.UpdateFileAsync();
                 }
                 catch (Exception t)
                 {
@@ -208,10 +207,8 @@ namespace HDistCore
                 string path = Path.Combine(DestinationDirectory, UPDATED_FILE);
                 if (success)
                 {
-                    using (StreamWriter writer = new StreamWriter(path, false, Encoding.UTF8))
-                    {
-                        writer.Write(Convert.ToBase64String(Checksum));
-                    }
+                    using StreamWriter writer = new(path, false, Encoding.UTF8);
+                    writer.Write(Convert.ToBase64String(Checksum));
                 }
                 else
                 {
@@ -227,20 +224,20 @@ namespace HDistCore
             }
         }
 
-        public void UpdateFiles(string[] files)
+        public async Task UpdateFilesAsync(string[] files)
         {
             _aborting = false;
             _pausing = false;
             foreach (string s in files)
             {
-                FileEntry entry = FindEntry(s);
+                FileEntry? entry = FindEntry(s);
                 if (entry == null)
                 {
                     continue;
                 }
                 try
                 {
-                    entry.UpdateFile();
+                    await entry.UpdateFileAsync();
                 }
                 catch (Exception t)
                 {
@@ -277,7 +274,7 @@ namespace HDistCore
             _pausing = false;
         }
 
-        private bool IsWritable(string path)
+        private static bool IsWritable(string path)
         {
             if (!File.Exists(path))
             {
@@ -285,8 +282,10 @@ namespace HDistCore
             }
             try
             {
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) { }
-                return true;
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    return true;
+                }
             }
             catch (IOException)
             {
@@ -294,7 +293,7 @@ namespace HDistCore
             }
         }
 
-        public void WaitUnlocked(string filename)
+        public void WaitUnlocked(string? filename)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -312,16 +311,17 @@ namespace HDistCore
             }
         }
 
-        internal FileList(string baseDir, string filename)
+        internal FileList(string baseUri, string checksumPath, string destinationDir)
         {
-            FileName = filename;
-            BaseDirectory = baseDir;
+            _baseUri = new Uri(baseUri, UriKind.Absolute);
+            ChecksumFileName = checksumPath;
+            DestinationDirectory = destinationDir;
             int line = 1;
-            using (StreamReader reader = new StreamReader(filename, FileEncoding))
+            using (StreamReader reader = new(checksumPath, FileEncoding))
             {
                 while (!reader.EndOfStream)
                 {
-                    string s = reader.ReadLine();
+                    string? s = reader.ReadLine();
                     if (string.IsNullOrEmpty(s))
                     {
                         continue;
@@ -341,131 +341,48 @@ namespace HDistCore
                             _list.Add(new FileEntry(this, strs[2], strs[0], len));
                             break;
                         default:
-                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, filename, line.ToString()));
+                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, checksumPath, line.ToString()));
                             break;
                     }
                 }
             }
             InvalidateNameToEntry();
             SHA1 sha = SHA1.Create();
-            using (FileStream stream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            {
-                Checksum = sha.ComputeHash(stream);
-            }
-        }
-        
-        private bool IsIgnored(string fullPath, string relPath, List<Regex> ignoreNames, bool ignoreHidden)
-        {
-            if (ignoreHidden && (File.GetAttributes(fullPath) & FileAttributes.Hidden) != 0)
-            {
-                return true;
-            }
-            string path1 = Treat(relPath);
-            string path2 = Path.GetFileName(path1);
-            foreach (Regex regex in ignoreNames)
-            {
-                if (regex.Match(path1).Success || regex.Match(path2).Success)
-                {
-                    return true;
-                }
-            }
-            return false;
+            using FileStream stream = new(checksumPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            Checksum = sha.ComputeHash(stream);
         }
 
-        private void EnumFiles(string directory, List<Regex> ignoreNames, bool ignoreHidden)
+        public string GetFullUri(string filename)
         {
-            foreach (string s in Directory.EnumerateFiles(directory, "*", SearchOption.TopDirectoryOnly))
-            {
-                string relPath = Path.GetRelativePath(BaseDirectory, s);
-                if (IsIgnored(s, relPath, ignoreNames, ignoreHidden))
-                {
-                    continue;
-                }
-                _list.Add(new FileEntry(this, relPath));
-            }
-            foreach (string s in Directory.EnumerateDirectories(directory, "*", SearchOption.TopDirectoryOnly))
-            {
-                string relPath = Path.GetRelativePath(BaseDirectory, s);
-                if (IsIgnored(s, relPath, ignoreNames, ignoreHidden))
-                {
-                    continue;
-                }
-                EnumFiles(s, ignoreNames, ignoreHidden);
-            }
-            InvalidateNameToEntry();
+            return CombineUri(BaseUri, filename);
         }
 
-        private static Regex ToRegex(string wildcard)
+        private static string CombineUri(string sourceUri, string filename)
         {
-            StringBuilder buf = new StringBuilder();
-            buf.Append('^');
-            foreach (char c in wildcard)
+            if (string.IsNullOrEmpty(sourceUri))
             {
-                switch (c)
-                {
-                    case '*':
-                        buf.Append(".*");
-                        break;
-                    case '?':
-                        buf.Append(".");
-                        break;
-                    case '$':
-                    case '(':
-                    case '+':
-                    case '.':
-                    case '[':
-                    case '^':
-                    case '{':
-                        buf.Append('\\');
-                        buf.Append(c);
-                        break;
-                    default:
-                        buf.Append(c);
-                        break;
-                }
+                return filename;
             }
-            buf.Append('$');
-            return new Regex(buf.ToString());
-        }
-
-        internal FileList(string baseDir, IList<string> ignoreNames, bool ignoreHidden)
-        {
-            FileName = null;
-            BaseDirectory = baseDir;
-            List<Regex> ignores = new List<Regex>(ignoreNames.Count);
-            foreach (string s in ignoreNames)
+            if (sourceUri.EndsWith('/'))
             {
-                ignores.Add(ToRegex(s));
+                return sourceUri + filename;
             }
-            ignores.Add(ToRegex(CHECKSUM_FILE));
-            EnumFiles(baseDir, ignores, ignoreHidden);
-            _list.Sort();
-            Checksum = new byte[0];
+            return sourceUri + "/" + filename;
         }
 
-        public static FileList CreateByDirectory(string directory, IList<string> ignoreNames, bool ignodeHidden, string compressDirectory)
+        public static FileList LoadChecksum(string sourceUri, string? compressDirectory, string destinationDirectory)
         {
-            return new FileList(directory, ignoreNames, ignodeHidden)
-            {
-                CompressedDirectory = compressDirectory,
-                DestinationDirectory = directory,
-            };
+            return LoadFromFile(sourceUri, CombineUri(sourceUri, CHECKSUM_FILE), compressDirectory, destinationDirectory);
         }
-
-        public static FileList LoadChecksum(string sourceDirectory, string compressDirectory, string destinationDirectory)
-        {
-            return LoadFromFile(sourceDirectory, Path.Combine(sourceDirectory, CHECKSUM_FILE), compressDirectory, destinationDirectory);
-        }
-        public static FileList LoadFromFile(string directory, string filename, string compressDirectory, string destinationDirectory)
+        public static FileList LoadFromFile(string sourceUri, string filename, string? compressDirectory, string destinationDirectory)
         {
             if (!File.Exists(filename))
             {
-                throw new ApplicationException(string.Format(Properties.Resources.ErrorChecksumNotFound, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
+                throw new ApplicationException(string.Format(Properties.Resources0.ErrorChecksumNotFound, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
             }
-            return new FileList(directory, filename)
+            return new FileList(sourceUri, filename, destinationDirectory)
             {
                 CompressedDirectory = compressDirectory,
-                DestinationDirectory = destinationDirectory,
             };
         }
 

@@ -19,7 +19,7 @@ namespace HCopy.Properties {
     // または Visual Studio のようなツールを使用して自動生成されました。
     // メンバーを追加または削除するには、.ResX ファイルを編集して、/str オプションと共に
     // ResGen を実行し直すか、または VS プロジェクトをビルドし直します。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -80,28 +80,21 @@ namespace HCopy.Properties {
         
         /// <summary>
         ///   hcopy &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///hcopyは&lt;source-dir&gt;から _checksum.sha に列挙されたファイルをコピーする。
+        ///hcopy copies files from &lt;source-dir&gt; listed in &quot;_checksum.sha&quot;.
         ///
         ///Options:
         ///  --wait &lt;file&gt;
         ///  -w &lt;file&gt;
-        ///      &lt;file&gt;の書き込みロックが解除されるまで待ってからコピーを開始する。
+        ///      Wait for the &lt;file&gt; write lock to be released before starting copying.
         ///
         ///  --run &lt;executable&gt;
         ///  -r &lt;executable&gt;
-        ///      コピーの終了後に指定したプログラムを起動する。
+        ///      Starts the program specified by &lt;executable&gt; after copying is completed.
         ///
         ///  --param &lt;parameters&gt;
         ///  -p &lt;parameters&gt;
-        ///      --run で指定したプログラムを実行する際のパラメータを指定する。
-        ///      複数ある場合は&quot;で括る。
-        ///
-        ///  --compress &lt;directory&gt;
-        ///  -c &lt;directory&gt;
-        ///      コピー高速化のため圧縮されたファイルを格納しているディレクトリを指定する。
-        ///      相対パスで指定した場合は&lt;source-dir&gt;からの相対パスになる。
-        ///
-        ///  --hel [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      Specify the parameters for executing the program specified by --run.
+        ///      If there are multiple paramet [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

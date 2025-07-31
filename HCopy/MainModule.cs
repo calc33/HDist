@@ -3,37 +3,38 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using HDistCore;
+using HDist.Core;
 
 namespace HCopy
 {
     public class MainModule
     {
-        private string WaitFile;
-        private string RunFile;
-        private string RunParam;
-        private string DestinationDir;
-        private string SourceDir;
-        private string CompressDir;
+        private readonly string? WaitFile;
+        private readonly string? RunFile;
+        private readonly string? RunParam;
+        private readonly string DestinationDir;
+        private readonly string SourceUri;
+        private readonly string? CompressDir;
         
-        private void ShowUsage(int exitCode)
+        private static void ShowUsage(int exitCode)
         {
             Console.Error.Write(Properties.Resources.Usage);
             Environment.Exit(exitCode);
         }
 
-        private void Error(string message)
+        private static void Error(string message)
         {
             Console.Error.WriteLine(message);
             Environment.Exit(1);
         }
 
-        private void Log(LogStatus status, LogCategory category, string filename, string message)
+        private static void Log(LogStatus status, LogCategory category, string? filename, string? message)
         {
-            TextWriter writer = Console.Out;
+            TextWriter? writer = Console.Out;
             switch (status)
             {
                 case LogStatus.Information:
@@ -58,7 +59,7 @@ namespace HCopy
             }
         }
         
-        private void Checksum_Log(object sender, LogEventArgs e)
+        private void Checksum_Log(object? sender, LogEventArgs e)
         {
             Log(e.Status, e.Category, e.FileName, e.Message);
         }
@@ -70,7 +71,7 @@ namespace HCopy
             }
             try
             {
-                Process.Start(RunFile, RunParam);
+                Process.Start(RunFile, RunParam ?? string.Empty);
             }
             catch (Exception t)
             {
@@ -81,7 +82,9 @@ namespace HCopy
 
         public MainModule(string[] args)
         {
-            List<string> paths = new List<string>();
+            SourceUri = string.Empty;
+            DestinationDir = string.Empty;
+            List<string> paths = new();
             for (int i = 0; i < args.Length; i++)
             {
                 string a = args[i];
@@ -111,10 +114,10 @@ namespace HCopy
                             break;
                         case "--help":
                         case "/?":
-                            ShowUsage(0);
+                            ShowUsage(0);   // ShowUsage中でプログラムが終了するので以降の処理はない
                             return;
                         default:
-                            if (a.StartsWith("-"))
+                            if (a.StartsWith('-'))
                             {
                                 Error(string.Format(Properties.Resources.InvalidOptionFmt, a));
                             }
@@ -130,19 +133,20 @@ namespace HCopy
             switch (paths.Count)
             {
                 case 1:
-                    SourceDir = paths[0];
+                    SourceUri = paths[0];
                     DestinationDir = Directory.GetCurrentDirectory();
                     break;
                 case 2:
-                    SourceDir = paths[0];
+                    SourceUri = paths[0];
                     DestinationDir = paths[1];
                     break;
-                default:
-                    ShowUsage(1);
-                    return;
+            }
+            if (string.IsNullOrEmpty(SourceUri) || string.IsNullOrEmpty(DestinationDir))
+            {
+                ShowUsage(1);   // ShowUsage中でプログラムが終了するので以降の処理はない
             }
         }
-        public void Run()
+        public async Task RunAsync()
         {
             try
             {
@@ -151,10 +155,10 @@ namespace HCopy
                     Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
                     return;
                 }
-                FileList list = FileList.LoadChecksum(SourceDir, CompressDir, DestinationDir);
+                FileList list = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
                 list.Log += Checksum_Log;
                 list.WaitUnlocked(WaitFile);
-                list.UpdateFiles();
+                await list.UpdateFilesAsync();
             }
             finally
             {

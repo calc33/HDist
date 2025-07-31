@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace HCopy
 {
@@ -8,8 +9,24 @@ namespace HCopy
         {
             try
             {
-                MainModule module = new MainModule(args);
-                module.Run();
+                MainModule module = new(args);
+                Task task = module.RunAsync();
+                task.Wait();
+                if (task.IsFaulted)
+                {
+                    foreach (Exception ex in task.Exception.InnerExceptions)
+                    {
+                        if (ex is ApplicationException)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                        else
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
+                    }
+                    Environment.Exit(1);
+                }
             }
             catch (ApplicationException t)
             {

@@ -2,23 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.BZip2;
 
-namespace HDistCore
+namespace HDist.Core
 {
     partial class FileList
     {
         public class FileEntry : IComparable
         {
-            private FileList _owner;
+            private readonly FileList _owner;
             public string FileName { get; set; }
-            public string Checksum { get; set; }
+            public string? Checksum { get; set; }
             public long Size { get; set; }
 
-            public string GetChecksum(string directory)
+            public string? GetChecksum(string directory)
             {
                 string path = Path.Combine(directory, FileName);
                 if (!File.Exists(path))
@@ -26,9 +29,13 @@ namespace HDistCore
                     return null;
                 }
                 SHA1 sha = SHA1.Create();
-                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (FileStream stream = new(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     sha.ComputeHash(stream);
+                }
+                if (sha.Hash == null || sha.Hash.Length == 0)
+                {
+                    return null;
                 }
                 return Convert.ToBase64String(sha.Hash);
             }
@@ -57,40 +64,29 @@ namespace HDistCore
                 return (Size != -1 && Size != GetSize(directory, FileName)) || Checksum != GetChecksum(directory);
             }
 
-            private string SizeStr(long size)
-            {
-                string s = size.ToString();
-                return s.PadLeft(9);
-            }
-
-            public void Write(TextWriter writer)
-            {
-                string s = SizeStr(GetSize(_owner.BaseDirectory, FileName));
-                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), s, FileName));
-            }
-
             private const string CompressExtenstion = ".bz2";
-            private bool ExtractFile()
+            private async Task<bool> ExtractFileAsync()
             {
-                if (string.IsNullOrEmpty(_owner.CompressedDirectory))
+                if (!_owner.IsFileUri || string.IsNullOrEmpty(_owner.CompressedDirectory))
                 {
                     return false;
                 }
-                string dir = Path.Combine(_owner.BaseDirectory, _owner.CompressedDirectory);
+                string dir = Path.Combine(_owner.BaseUri, _owner.CompressedDirectory);
                 string src = Path.Combine(dir, FileName) + CompressExtenstion;
                 if (!File.Exists(src))
                 {
                     return false;
                 }
                 OnLog(LogStatus.Information, LogCategory.CopyCompressed, null);
-                using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                await Task.Run(()=>
                 {
-                    string dest = Path.Combine(_owner.DestinationDirectory, FileName);
-                    using (FileStream destStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None))
+                    using (FileStream srcStream = new(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
+                        string dest = Path.Combine(_owner.DestinationDirectory, FileName);
+                        using FileStream destStream = new(dest, FileMode.Create, FileAccess.Write, FileShare.None);
                         BZip2.Decompress(srcStream, destStream, true);
                     }
-                }
+                });
                 bool mod = IsModified(_owner.DestinationDirectory);
                 if (mod)
                 {
@@ -99,34 +95,52 @@ namespace HDistCore
                 return !mod;
             }
 
-            public void CompressFile()
+            private HttpClient? _httpClient;
+            private HttpClient RequireClient()
             {
-                if (string.IsNullOrEmpty(_owner.CompressedDirectory))
+                if (_httpClient == null)
                 {
+                    _httpClient = new HttpClient();
+                    _httpClient.Timeout = TimeSpan.FromSeconds(30);
+                    _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                }
+                return _httpClient;
+            }
+
+            private async Task CopyFileAsync(string src, string dest)
+            {
+                if (_owner.IsFileUri)
+                {
+                    await Task.Run(() => File.Copy(src, dest, true));
                     return;
                 }
-                string src = Path.Combine(_owner.BaseDirectory, FileName);
-                string dest = Path.Combine(_owner.CompressedDirectory, FileName) + CompressExtenstion;
-                string destDir = Path.GetDirectoryName(dest);
-                if (!string.IsNullOrEmpty(destDir))
+                HttpClient client = RequireClient();
+                HttpResponseMessage response = await client.GetAsync(src);
+                HttpContent content = response.Content;
+                if (!response.IsSuccessStatusCode)
                 {
-                    Directory.CreateDirectory(destDir);
+                    OnLog(LogStatus.Error, LogCategory.Copy, await content.ReadAsStringAsync());
+                    return;
                 }
-                OnLog(LogStatus.Information, LogCategory.Compressing, null);
-                using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (Stream inStream = await content.ReadAsStreamAsync())
                 {
-                    using (FileStream destStream = new FileStream(dest, FileMode.Create, FileAccess.Write, FileShare.None))
+                    using (FileStream outStream = new(dest, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
                     {
-                        BZip2.Compress(srcStream, destStream, true, 9);
+                        inStream.CopyTo(outStream);
                     }
+                }
+                DateTimeOffset? lastModified = content.Headers.LastModified;
+                if (lastModified.HasValue)
+                {
+                    File.SetLastWriteTimeUtc(dest, lastModified.Value.UtcDateTime);
                 }
             }
 
-            private void CopyFile()
+            private async Task CopyFileAsync()
             {
-                string src = Path.Combine(_owner.BaseDirectory, FileName);
-                string dest = Path.Combine(_owner.DestinationDirectory, FileName);
-                string destDir = Path.GetDirectoryName(dest);
+                string? src = _owner.GetFullUri(FileName);
+                string? dest = Path.Combine(_owner.DestinationDirectory, FileName);
+                string? destDir = Path.GetDirectoryName(dest);
                 if (!string.IsNullOrEmpty(destDir))
                 {
                     Directory.CreateDirectory(destDir);
@@ -134,7 +148,7 @@ namespace HDistCore
                 bool flag = false;
                 try
                 {
-                    flag = ExtractFile();
+                    flag = await ExtractFileAsync();
                 }
                 catch (Exception t)
                 {
@@ -145,7 +159,7 @@ namespace HDistCore
                     OnLog(LogStatus.Information, LogCategory.Copy, null);
                     try
                     {
-                        File.Copy(src, dest, true);
+                        await CopyFileAsync(src, dest);
                     }
                     catch (Exception t)
                     {
@@ -154,18 +168,18 @@ namespace HDistCore
                 }
             }
 
-            public void UpdateFile()
+            public async Task UpdateFileAsync()
             {
                 OnLog(LogStatus.Progress, LogCategory.NoMessage, null);
                 if (!IsModified(_owner.DestinationDirectory))
                 {
                     return;
                 }
-                CopyFile();
+                await CopyFileAsync();
                 return;
             }
 
-            private void OnLog(LogStatus status, LogCategory category, string message)
+            private void OnLog(LogStatus status, LogCategory category, string? message)
             {
                 _owner.OnLog(new LogEventArgs(status, category, FileName, message));
             }
@@ -173,7 +187,7 @@ namespace HDistCore
             public FileEntry(FileList owner, string filename, string checksum, long size)
             {
                 _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
+                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseUri, filename) : filename;
                 Checksum = checksum;
                 Size = size;
             }
@@ -181,18 +195,18 @@ namespace HDistCore
             public FileEntry(FileList owner, string filename)
             {
                 _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseDirectory, filename) : filename;
-                Checksum = GetChecksum(_owner.BaseDirectory);
-                Size = GetSize(_owner.BaseDirectory, FileName);
+                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseUri, filename) : filename;
+                Checksum = GetChecksum(_owner.BaseUri);
+                Size = GetSize(_owner.BaseUri, FileName);
             }
 
-            public int CompareTo(object obj)
+            public int CompareTo(object? obj)
             {
-                if (!(obj is FileEntry))
+                if (!(obj is FileEntry entry))
                 {
                     return -1;
                 }
-                return string.Compare(FileName, ((FileEntry)obj).FileName, FileNameComparison);
+                return string.Compare(FileName, entry.FileName, FileNameComparison);
             }
 
             public override string ToString()
@@ -200,13 +214,13 @@ namespace HDistCore
                 return string.Format("{0} {1}", Checksum, FileName);
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
-                if (!(obj is FileEntry))
+                if (!(obj is FileEntry entry))
                 {
                     return false;
                 }
-                return string.Compare(FileName, ((FileEntry)obj).FileName, FileNameComparison) == 0;
+                return string.Compare(FileName, entry.FileName, FileNameComparison) == 0;
             }
 
             public override int GetHashCode()

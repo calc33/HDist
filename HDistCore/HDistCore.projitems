@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>db8cd238-b712-4eb4-9b38-001dde9ff368</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HDist.Core</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)FileEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileList.Run.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LogResource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Properties\Resources0.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Properties\Resources0.ja.resx" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Properties\Resources0.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

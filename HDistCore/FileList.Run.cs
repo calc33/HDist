@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HDistCore
+namespace HDist.Core
 {
     /// <summary>
     /// FileList.Run は hdist.dll をプログラムに組み込んで自己更新するためのAPI群
@@ -36,7 +36,7 @@ namespace HDistCore
             {
                 string path = module.Assembly.Location;
                 string fname = Path.GetRelativePath(DestinationDirectory, path);
-                FileEntry entry = FindEntry(fname);
+                FileEntry? entry = FindEntry(fname);
                 if (entry != null && entry.IsModified(DestinationDirectory))
                 {
                     return true;
@@ -45,11 +45,11 @@ namespace HDistCore
             return false;
         }
 
-        private static string[] PreCopyFiles = new string[] { "hcopy.exe", "HCopyW.exe", "hcopy.dll", "hcopy.deps.json", "hcopy.runtimeconfig.json", "hdist.dll", "ICSharpCode.SharpZipLib.dll" };
+        private static readonly string[] PreCopyFiles = new string[] { "hcopy.exe", "HCopyW.exe", "hcopy.dll", "hcopy.deps.json", "hcopy.runtimeconfig.json", "hdist.dll", "ICSharpCode.SharpZipLib.dll" };
         private const string HCopy_exe = "hcopy.exe";
         private const string HCopyW_exe = "HCopyW.exe";
 
-        private static string GetExecuatblePath(string destinationDirectory, string filename)
+        private static string? GetExecuatblePath(string destinationDirectory, string filename)
         {
             string path = Path.Combine(destinationDirectory, filename);
             if (File.Exists(path))
@@ -70,11 +70,11 @@ namespace HDistCore
 
         private static string _Q(string value)
         {
-            if (value.StartsWith("\""))
+            if (value.StartsWith('"'))
             {
                 return value;
             }
-            StringBuilder buf = new StringBuilder();
+            StringBuilder buf = new();
             buf.Append('"');
             foreach (char c in value)
             {
@@ -88,18 +88,22 @@ namespace HDistCore
             return buf.ToString();
         }
 
-        private void RunProcess(string hcopyExe, bool restart)
+        private async Task RunProcessAsync(string hcopyExe, bool restart)
         {
             // hcopy.exe/HCopyW.exeと関連ファイルは事前にコピー
-            UpdateFiles(PreCopyFiles);
-            string exe = GetExecuatblePath(DestinationDirectory, hcopyExe);
+            await UpdateFilesAsync(PreCopyFiles);
+            string? exe = GetExecuatblePath(DestinationDirectory, hcopyExe);
             if (string.IsNullOrEmpty(exe))
             {
                 throw new FileNotFoundException(string.Format("{0}が見つかりません", hcopyExe));
             }
             Process p = Process.GetCurrentProcess();
             ProcessStartInfo info = p.StartInfo;
-            string args = string.Format("{0} {1}", _Q(BaseDirectory), _Q(DestinationDirectory));
+            if (p.MainModule == null)
+            {
+                throw new InvalidOperationException("MainModule is null");
+            }
+            string args = string.Format("{0} {1}", _Q(BaseUri), _Q(DestinationDirectory));
             if (restart)
             {
                 args += string.Format(" --wait {0} --run {0} --param {1}", _Q(p.MainModule.FileName), _Q(info.Arguments));
@@ -116,7 +120,7 @@ namespace HDistCore
         /// <param name="restart"></param>
         public void RunHCopy(bool restart)
         {
-            RunProcess(HCopy_exe, restart);
+            _ = RunProcessAsync(HCopy_exe, restart);
         }
 
         /// <summary>
@@ -128,7 +132,7 @@ namespace HDistCore
         /// <param name="restart"></param>
         public void RunHCopyW(bool restart)
         {
-            RunProcess(HCopyW_exe, restart);
+            _ = RunProcessAsync(HCopyW_exe, restart);
         }
     }
 }

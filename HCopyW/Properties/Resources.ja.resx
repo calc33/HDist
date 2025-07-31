@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ButtonPause_Pause" xml:space="preserve">
     <value>中断</value>
@@ -129,11 +129,56 @@
   <data name="ButtonQuit_Quit" xml:space="preserve">
     <value>終了</value>
   </data>
+  <data name="CompressModeIgnored" xml:space="preserve">
+    <value>http接続時には圧縮フォルダの設定は無視されます</value>
+  </data>
   <data name="EmptyText" xml:space="preserve">
     <value>(なし)</value>
   </data>
+  <data name="ErrorChecksumNotFound" xml:space="preserve">
+    <value>"{0}"にファイル"{1}"がありません。</value>
+  </data>
   <data name="InvalidOptionFmt" xml:space="preserve">
     <value>不明なオプション: {0}</value>
+  </data>
+  <data name="LogFormatAborted" xml:space="preserve">
+    <value>中断しました。</value>
+  </data>
+  <data name="LogFormatCompressing" xml:space="preserve">
+    <value>{0}を圧縮中</value>
+  </data>
+  <data name="LogFormatCopy" xml:space="preserve">
+    <value>{0}をコピー中</value>
+  </data>
+  <data name="LogFormatCopyCompressed" xml:space="preserve">
+    <value>{0}を圧縮コピー中</value>
+  </data>
+  <data name="LogFormatException" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="LogFormatFailToExtract" xml:space="preserve">
+    <value>{0}の圧縮コピーに失敗しました。通常コピーします。</value>
+  </data>
+  <data name="LogFormatFinished" xml:space="preserve">
+    <value>***終了しました***</value>
+  </data>
+  <data name="LogFormatInvalidChecksumEntry" xml:space="preserve">
+    <value>{0}: {1}行目の読み込みに失敗しました</value>
+  </data>
+  <data name="LogFormatNoMessage" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="LogFormatPaused" xml:space="preserve">
+    <value>一時停止</value>
+  </data>
+  <data name="LogFormatResumed" xml:space="preserve">
+    <value>再開</value>
+  </data>
+  <data name="LogFormatSuppressUpdating" xml:space="preserve">
+    <value>更新禁止に設定されています。</value>
+  </data>
+  <data name="LogFormatWaitLocked" xml:space="preserve">
+    <value>{0}の終了を待っています。</value>
   </data>
   <data name="MessageBox_AbortCopy" xml:space="preserve">
     <value>コピー処理中です。中断しますか?</value>
@@ -150,7 +195,7 @@
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>{0}に続くパラメータがありません</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Usage.ja.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>

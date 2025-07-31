@@ -6,6 +6,7 @@
     <StartupObject>HCopy.Program</StartupObject>
     <AssemblyName>hcopy</AssemblyName>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -32,14 +33,30 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HDistCore\HDistCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+  </ItemGroup>
+
+  <Import Project="..\HDistCore\HDistCore.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <Compile Update="C:\Users\baba.UNICORN\Documents\DevUtils.net\HDist\HDistCore\Properties\Resources0.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources0.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="C:\Users\baba.UNICORN\Documents\DevUtils.net\HDist\HDistCore\Properties\Resources0.resx">
+      <LastGenOutput>Resources0.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

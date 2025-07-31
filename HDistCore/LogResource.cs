@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HDistCore
+namespace HDist.Core
 {
     public enum LogStatus
     {
@@ -33,9 +33,9 @@ namespace HDistCore
     {
         public LogStatus Status { get; }
         public LogCategory Category { get; }
-        public string FileName { get; }
-        public string Message { get; }
-        public LogEventArgs(LogStatus status, LogCategory category, string filename, string message)
+        public string? FileName { get; }
+        public string? Message { get; }
+        public LogEventArgs(LogStatus status, LogCategory category, string? filename, string? message)
         {
             Status = status;
             Category = category;
@@ -46,33 +46,32 @@ namespace HDistCore
 
     public static class LogResource
     {
-        private static Dictionary<LogCategory, string> CategoryToMessage = new Dictionary<LogCategory, string>()
+        private static readonly Dictionary<LogCategory, string> CategoryToMessage = new()
         {
-            { LogCategory.Exception, Properties.Resources.LogFormatException },
-            { LogCategory.Copy, Properties.Resources.LogFormatCopy },
-            { LogCategory.CopyCompressed, Properties.Resources.LogFormatCopyCompressed },
-            { LogCategory.FailToExtract, Properties.Resources.LogFormatFailToExtract },
-            { LogCategory.Compressing, Properties.Resources.LogFormatCopyCompressed },
-            { LogCategory.NoMessage, Properties.Resources.LogFormatNoMessage },
-            { LogCategory.WaitLocked, Properties.Resources.LogFormatWaitLocked },
-            { LogCategory.Aborted, Properties.Resources.LogFormatAborted },
-            { LogCategory.Paused, Properties.Resources.LogFormatPaused },
-            { LogCategory.Resumed, Properties.Resources.LogFormatResumed },
-            { LogCategory.Finished, Properties.Resources.LogFormatFinished },
-            { LogCategory.SuppressUpdating, Properties.Resources.LogFormatSuppressUpdating },
-            { LogCategory.InvalidChecksumEntry, Properties.Resources.LogFormatInvalidChecksumEntry },
+            { LogCategory.Exception, Properties.Resources0.LogFormatException },
+            { LogCategory.Copy, Properties.Resources0.LogFormatCopy },
+            { LogCategory.CopyCompressed, Properties.Resources0.LogFormatCopyCompressed },
+            { LogCategory.FailToExtract, Properties.Resources0.LogFormatFailToExtract },
+            { LogCategory.Compressing, Properties.Resources0.LogFormatCopyCompressed },
+            { LogCategory.NoMessage, Properties.Resources0.LogFormatNoMessage },
+            { LogCategory.WaitLocked, Properties.Resources0.LogFormatWaitLocked },
+            { LogCategory.Aborted, Properties.Resources0.LogFormatAborted },
+            { LogCategory.Paused, Properties.Resources0.LogFormatPaused },
+            { LogCategory.Resumed, Properties.Resources0.LogFormatResumed },
+            { LogCategory.Finished, Properties.Resources0.LogFormatFinished },
+            { LogCategory.SuppressUpdating, Properties.Resources0.LogFormatSuppressUpdating },
+            { LogCategory.InvalidChecksumEntry, Properties.Resources0.LogFormatInvalidChecksumEntry },
         };
 
         public static string GetMessageFormat(LogCategory category)
         {
-            string fmt;
-            if (!CategoryToMessage.TryGetValue(category, out fmt))
+            if (!CategoryToMessage.TryGetValue(category, out string? fmt))
             {
                 return "{0}: {1}";
             }
             return fmt;
         }
-        public static string GetMessage(LogCategory category, string filename, string message)
+        public static string GetMessage(LogCategory category, string? filename, string? message)
         {
             string fmt = GetMessageFormat(category);
             return string.Format(fmt, filename, message);

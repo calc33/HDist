@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ButtonPause_Pause" xml:space="preserve">
     <value>Pause</value>
@@ -129,11 +129,56 @@
   <data name="ButtonQuit_Quit" xml:space="preserve">
     <value>Quit</value>
   </data>
+  <data name="CompressModeIgnored" xml:space="preserve">
+    <value>Compressed settings are ignored in HTTP connection mode.</value>
+  </data>
   <data name="EmptyText" xml:space="preserve">
     <value>(none)</value>
   </data>
+  <data name="ErrorChecksumNotFound" xml:space="preserve">
+    <value>"{1}" not found in "{0}"</value>
+  </data>
   <data name="InvalidOptionFmt" xml:space="preserve">
     <value>Invalid parameter: {0}</value>
+  </data>
+  <data name="LogFormatAborted" xml:space="preserve">
+    <value>Aborted.</value>
+  </data>
+  <data name="LogFormatCompressing" xml:space="preserve">
+    <value>Compressing {0}</value>
+  </data>
+  <data name="LogFormatCopy" xml:space="preserve">
+    <value>Copying {0}</value>
+  </data>
+  <data name="LogFormatCopyCompressed" xml:space="preserve">
+    <value>Copying {0} (compressed)</value>
+  </data>
+  <data name="LogFormatException" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="LogFormatFailToExtract" xml:space="preserve">
+    <value>{0}: Failed to copy by compressed, start copying normally</value>
+  </data>
+  <data name="LogFormatFinished" xml:space="preserve">
+    <value>***Finished***</value>
+  </data>
+  <data name="LogFormatInvalidChecksumEntry" xml:space="preserve">
+    <value>{0}: Fail to read at line {1}</value>
+  </data>
+  <data name="LogFormatNoMessage" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="LogFormatPaused" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="LogFormatResumed" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="LogFormatSuppressUpdating" xml:space="preserve">
+    <value>Update prohibited</value>
+  </data>
+  <data name="LogFormatWaitLocked" xml:space="preserve">
+    <value>Waiting for {0}</value>
   </data>
   <data name="MessageBox_AbortCopy" xml:space="preserve">
     <value>Copy processing is in progress. Do you want to abort?</value>
@@ -150,7 +195,7 @@
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>There is no parameter following {0}</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Usage.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
   </data>

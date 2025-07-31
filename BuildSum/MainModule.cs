@@ -4,20 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HDistCore;
 
 namespace BuildSum
 {
     public class MainModule
     {
         public string TargetDir;
-        public string CompressDir;
-        public List<string> IgnoreFiles = new List<string>();
+        public string? CompressDir;
+        public List<string> IgnoreFiles = new();
         public bool IgnoreHidden = true;
 
-        private void Log(LogStatus status, LogCategory category, string filename, string message)
+        private static void Log(LogStatus status, LogCategory category, string? filename, string? message)
         {
-            TextWriter writer = Console.Out;
+            TextWriter? writer = Console.Out;
             switch (status)
             {
                 case LogStatus.Information:
@@ -35,28 +34,25 @@ namespace BuildSum
                     break;
             }
             string msg = LogResource.GetMessage(category, filename, message);
-            if (writer != null)
-            {
-                writer.WriteLine(msg);
-            }
+            writer?.WriteLine(msg);
         }
-        private void FileList_Log(object sender, LogEventArgs e)
+        private void FileList_Log(object? sender, LogEventArgs e)
         {
             Log(e.Status, e.Category, e.FileName, e.Message);
         }
-        public void Error(string message)
+        public static void Error(string message)
         {
             Console.Error.WriteLine(message);
             Environment.Exit(1);
         }
-        private void ShowUsage()
+        private static void ShowUsage()
         {
             Console.Error.Write(Properties.Resources.Usage);
             Environment.Exit(0);
         }
         public MainModule(string[] args)
         {
-            string ignorePath = null;
+            string? ignorePath = null;
             for (int i = 0; i < args.Length; i++)
             {
                 string a = args[i];
@@ -124,11 +120,11 @@ namespace BuildSum
             }
             if (ignorePath != null)
             {
-                using (StreamReader reader = new StreamReader(ignorePath, Encoding.UTF8))
+                using (StreamReader reader = new(ignorePath, Encoding.UTF8))
                 {
                     while (!reader.EndOfStream)
                     {
-                        string s = reader.ReadLine();
+                        string? s = reader.ReadLine();
                         if (string.IsNullOrEmpty(s))
                         {
                             continue;

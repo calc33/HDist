@@ -19,7 +19,7 @@ namespace BuildSum.Properties {
     // または Visual Studio のようなツールを使用して自動生成されました。
     // メンバーを追加または削除するには、.ResX ファイルを編集して、/str オプションと共に
     // ResGen を実行し直すか、または VS プロジェクトをビルドし直します。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -98,25 +98,19 @@ namespace BuildSum.Properties {
         
         /// <summary>
         ///   BuildSum [&lt;target-dir&gt;] [options]
-        ///BuildSumは&lt;target-dir&gt;で指定したディレクトリに含まれるファイルの
-        ///SHA1チェックサム一覧を _checksum.sha という名前で生成する。
-        ///&lt;target-dir&gt;を省略した場合はカレントディレクトリが対象
+        ///BuildSum generates a SHA1 checksum named &quot;_checksum.sha&quot; from files in &lt;target-dir&gt;.
+        ///If &lt;target-dir&gt; is omitted, use current directory.
         ///
         ///Options:
         ///  --compress &lt;compress-dir&gt;
         ///  -c &lt;compress-dir&gt;
-        ///      圧縮ファイルを格納するディレクトリ。
-        ///      圧縮ファイルを使うことでネットワークの負荷を軽減できる。
-        ///      相対パスで指定した場合は&lt;target-dir&gt;からの相対パスになる。
+        ///      Directory for storing compressed files.
+        ///      You can reduce the load on the network by using compressed files.
+        ///      If specified as a relative path, it will be a relative path from &lt;target-dir&gt;.
         ///
         ///  --ignore &lt;name&gt;
         ///  -i &lt;name&gt;
-        ///      一覧作成時に無視するファイル名/ディレクトリ名。ワイルドカード可。
-        ///      複数のファイル名を指定したい場合、このオプションを複数回指定する。
-        ///      --ignore-listと排他的に使用する。
-        ///
-        ///  --ignore-list &lt;filename&gt;
-        ///  -I &lt;filenam [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///      file or directory name to ignor [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {

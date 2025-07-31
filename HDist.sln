@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32228.343
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HCopy", "HCopy\HCopy.csproj", "{1FBA209B-BA80-473F-B242-967F945D3498}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildSum", "BuildSum\BuildSum.csproj", "{7E4DF90A-2B1A-4B02-97F0-1761FDCDF061}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HDistCore", "HDistCore\HDistCore.csproj", "{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HDistCore", "HDistCore\HDistCore.shproj", "{DB8CD238-B712-4EB4-9B38-001DDE9FF368}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HCopyW", "HCopyW\HCopyW.csproj", "{3400C4FB-8F19-4056-B744-49C22858D3EE}"
 EndProject
@@ -25,10 +25,6 @@ Global
 		{7E4DF90A-2B1A-4B02-97F0-1761FDCDF061}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E4DF90A-2B1A-4B02-97F0-1761FDCDF061}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4DF90A-2B1A-4B02-97F0-1761FDCDF061}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04F14B3A-83CC-46DE-AE36-7B2197B8C43A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3400C4FB-8F19-4056-B744-49C22858D3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,5 +35,10 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23F512DB-D1B3-4C82-A65F-14AA210FCE6E}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		HDistCore\HDistCore.projitems*{1fba209b-ba80-473f-b242-967f945d3498}*SharedItemsImports = 5
+		HDistCore\HDistCore.projitems*{3400c4fb-8f19-4056-b744-49c22858d3ee}*SharedItemsImports = 5
+		HDistCore\HDistCore.projitems*{db8cd238-b712-4eb4-9b38-001dde9ff368}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

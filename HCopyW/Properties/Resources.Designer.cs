@@ -19,7 +19,7 @@ namespace HCopy.Properties {
     // または Visual Studio のようなツールを使用して自動生成されました。
     // メンバーを追加または削除するには、.ResX ファイルを編集して、/str オプションと共に
     // ResGen を実行し直すか、または VS プロジェクトをビルドし直します。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -97,6 +97,15 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
+        ///   Compressed settings are ignored in HTTP connection mode. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string CompressModeIgnored {
+            get {
+                return ResourceManager.GetString("CompressModeIgnored", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   (none) に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string EmptyText {
@@ -106,11 +115,137 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
+        ///   &quot;{1}&quot; not found in &quot;{0}&quot; に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ErrorChecksumNotFound {
+            get {
+                return ResourceManager.GetString("ErrorChecksumNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Invalid parameter: {0} に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string InvalidOptionFmt {
             get {
                 return ResourceManager.GetString("InvalidOptionFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Aborted. に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatAborted {
+            get {
+                return ResourceManager.GetString("LogFormatAborted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Compressing {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatCompressing {
+            get {
+                return ResourceManager.GetString("LogFormatCompressing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Copying {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatCopy {
+            get {
+                return ResourceManager.GetString("LogFormatCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Copying {0} (compressed) に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatCopyCompressed {
+            get {
+                return ResourceManager.GetString("LogFormatCopyCompressed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}: {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatException {
+            get {
+                return ResourceManager.GetString("LogFormatException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}: Failed to copy by compressed, start copying normally に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatFailToExtract {
+            get {
+                return ResourceManager.GetString("LogFormatFailToExtract", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   ***Finished*** に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatFinished {
+            get {
+                return ResourceManager.GetString("LogFormatFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0}: Fail to read at line {1} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatInvalidChecksumEntry {
+            get {
+                return ResourceManager.GetString("LogFormatInvalidChecksumEntry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatNoMessage {
+            get {
+                return ResourceManager.GetString("LogFormatNoMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Pause に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatPaused {
+            get {
+                return ResourceManager.GetString("LogFormatPaused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Resume に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatResumed {
+            get {
+                return ResourceManager.GetString("LogFormatResumed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Update prohibited に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatSuppressUpdating {
+            get {
+                return ResourceManager.GetString("LogFormatSuppressUpdating", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Waiting for {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string LogFormatWaitLocked {
+            get {
+                return ResourceManager.GetString("LogFormatWaitLocked", resourceCulture);
             }
         }
         
