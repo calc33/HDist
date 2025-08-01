@@ -337,7 +337,8 @@ namespace HCopy
 
         private void ShowUsage()
         {
-            MessageBox.Show(this, Properties.Resources.Usage, Properties.Resources.MessageBox_Usage, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            UsageForm form = new UsageForm();
+            form.ShowDialog(this);
             Application.Exit();
         }
 

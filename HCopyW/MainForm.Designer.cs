@@ -29,127 +29,127 @@ namespace HCopy
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.panelTop = new System.Windows.Forms.Panel();
-            this.labelStatus = new System.Windows.Forms.Label();
-            this.labelDestDir = new System.Windows.Forms.Label();
-            this.labelCompressDir = new System.Windows.Forms.Label();
-            this.labelSourceDir = new System.Windows.Forms.Label();
-            this.labelStatusTitle = new System.Windows.Forms.Label();
-            this.labelDestDirTitle = new System.Windows.Forms.Label();
-            this.labelCompressDirTitle = new System.Windows.Forms.Label();
-            this.labelSourceDirTitle = new System.Windows.Forms.Label();
-            this.panelBottom = new System.Windows.Forms.Panel();
-            this.buttonQuit = new System.Windows.Forms.Button();
-            this.buttonPause = new System.Windows.Forms.Button();
-            this.textBoxLog = new System.Windows.Forms.TextBox();
-            this.timerAutoQuit = new System.Windows.Forms.Timer(this.components);
-            this.panelTop.SuspendLayout();
-            this.panelBottom.SuspendLayout();
-            this.SuspendLayout();
+            panelTop = new System.Windows.Forms.Panel();
+            labelStatus = new System.Windows.Forms.Label();
+            labelDestDir = new System.Windows.Forms.Label();
+            labelCompressDir = new System.Windows.Forms.Label();
+            labelSourceDir = new System.Windows.Forms.Label();
+            labelStatusTitle = new System.Windows.Forms.Label();
+            labelDestDirTitle = new System.Windows.Forms.Label();
+            labelCompressDirTitle = new System.Windows.Forms.Label();
+            labelSourceDirTitle = new System.Windows.Forms.Label();
+            panelBottom = new System.Windows.Forms.Panel();
+            buttonQuit = new System.Windows.Forms.Button();
+            buttonPause = new System.Windows.Forms.Button();
+            textBoxLog = new System.Windows.Forms.TextBox();
+            timerAutoQuit = new System.Windows.Forms.Timer(components);
+            panelTop.SuspendLayout();
+            panelBottom.SuspendLayout();
+            SuspendLayout();
             // 
             // panelTop
             // 
-            resources.ApplyResources(this.panelTop, "panelTop");
-            this.panelTop.Controls.Add(this.labelStatus);
-            this.panelTop.Controls.Add(this.labelDestDir);
-            this.panelTop.Controls.Add(this.labelCompressDir);
-            this.panelTop.Controls.Add(this.labelSourceDir);
-            this.panelTop.Controls.Add(this.labelStatusTitle);
-            this.panelTop.Controls.Add(this.labelDestDirTitle);
-            this.panelTop.Controls.Add(this.labelCompressDirTitle);
-            this.panelTop.Controls.Add(this.labelSourceDirTitle);
-            this.panelTop.Name = "panelTop";
+            panelTop.Controls.Add(labelStatus);
+            panelTop.Controls.Add(labelDestDir);
+            panelTop.Controls.Add(labelCompressDir);
+            panelTop.Controls.Add(labelSourceDir);
+            panelTop.Controls.Add(labelStatusTitle);
+            panelTop.Controls.Add(labelDestDirTitle);
+            panelTop.Controls.Add(labelCompressDirTitle);
+            panelTop.Controls.Add(labelSourceDirTitle);
+            resources.ApplyResources(panelTop, "panelTop");
+            panelTop.Name = "panelTop";
             // 
             // labelStatus
             // 
-            resources.ApplyResources(this.labelStatus, "labelStatus");
-            this.labelStatus.Name = "labelStatus";
+            resources.ApplyResources(labelStatus, "labelStatus");
+            labelStatus.Name = "labelStatus";
             // 
             // labelDestDir
             // 
-            resources.ApplyResources(this.labelDestDir, "labelDestDir");
-            this.labelDestDir.Name = "labelDestDir";
+            resources.ApplyResources(labelDestDir, "labelDestDir");
+            labelDestDir.Name = "labelDestDir";
             // 
             // labelCompressDir
             // 
-            resources.ApplyResources(this.labelCompressDir, "labelCompressDir");
-            this.labelCompressDir.Name = "labelCompressDir";
+            resources.ApplyResources(labelCompressDir, "labelCompressDir");
+            labelCompressDir.Name = "labelCompressDir";
             // 
             // labelSourceDir
             // 
-            resources.ApplyResources(this.labelSourceDir, "labelSourceDir");
-            this.labelSourceDir.Name = "labelSourceDir";
+            resources.ApplyResources(labelSourceDir, "labelSourceDir");
+            labelSourceDir.Name = "labelSourceDir";
             // 
             // labelStatusTitle
             // 
-            resources.ApplyResources(this.labelStatusTitle, "labelStatusTitle");
-            this.labelStatusTitle.Name = "labelStatusTitle";
+            resources.ApplyResources(labelStatusTitle, "labelStatusTitle");
+            labelStatusTitle.Name = "labelStatusTitle";
             // 
             // labelDestDirTitle
             // 
-            resources.ApplyResources(this.labelDestDirTitle, "labelDestDirTitle");
-            this.labelDestDirTitle.Name = "labelDestDirTitle";
+            resources.ApplyResources(labelDestDirTitle, "labelDestDirTitle");
+            labelDestDirTitle.Name = "labelDestDirTitle";
             // 
             // labelCompressDirTitle
             // 
-            resources.ApplyResources(this.labelCompressDirTitle, "labelCompressDirTitle");
-            this.labelCompressDirTitle.Name = "labelCompressDirTitle";
+            resources.ApplyResources(labelCompressDirTitle, "labelCompressDirTitle");
+            labelCompressDirTitle.Name = "labelCompressDirTitle";
             // 
             // labelSourceDirTitle
             // 
-            resources.ApplyResources(this.labelSourceDirTitle, "labelSourceDirTitle");
-            this.labelSourceDirTitle.Name = "labelSourceDirTitle";
+            resources.ApplyResources(labelSourceDirTitle, "labelSourceDirTitle");
+            labelSourceDirTitle.Name = "labelSourceDirTitle";
             // 
             // panelBottom
             // 
-            resources.ApplyResources(this.panelBottom, "panelBottom");
-            this.panelBottom.Controls.Add(this.buttonQuit);
-            this.panelBottom.Controls.Add(this.buttonPause);
-            this.panelBottom.Name = "panelBottom";
+            panelBottom.Controls.Add(buttonQuit);
+            panelBottom.Controls.Add(buttonPause);
+            resources.ApplyResources(panelBottom, "panelBottom");
+            panelBottom.Name = "panelBottom";
             // 
             // buttonQuit
             // 
-            resources.ApplyResources(this.buttonQuit, "buttonQuit");
-            this.buttonQuit.Name = "buttonQuit";
-            this.buttonQuit.UseVisualStyleBackColor = true;
-            this.buttonQuit.Click += new System.EventHandler(this.buttonQuit_Click);
+            resources.ApplyResources(buttonQuit, "buttonQuit");
+            buttonQuit.Name = "buttonQuit";
+            buttonQuit.UseVisualStyleBackColor = true;
+            buttonQuit.Click += buttonQuit_Click;
             // 
             // buttonPause
             // 
-            resources.ApplyResources(this.buttonPause, "buttonPause");
-            this.buttonPause.Name = "buttonPause";
-            this.buttonPause.UseVisualStyleBackColor = true;
-            this.buttonPause.Click += new System.EventHandler(this.buttonPause_Click);
+            resources.ApplyResources(buttonPause, "buttonPause");
+            buttonPause.Name = "buttonPause";
+            buttonPause.UseVisualStyleBackColor = true;
+            buttonPause.Click += buttonPause_Click;
             // 
             // textBoxLog
             // 
-            resources.ApplyResources(this.textBoxLog, "textBoxLog");
-            this.textBoxLog.Name = "textBoxLog";
+            resources.ApplyResources(textBoxLog, "textBoxLog");
+            textBoxLog.Name = "textBoxLog";
             // 
             // timerAutoQuit
             // 
-            this.timerAutoQuit.Interval = 200;
-            this.timerAutoQuit.Tick += new System.EventHandler(this.timerAutoQuit_Tick);
+            timerAutoQuit.Interval = 200;
+            timerAutoQuit.Tick += timerAutoQuit_Tick;
             // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.textBoxLog);
-            this.Controls.Add(this.panelBottom);
-            this.Controls.Add(this.panelTop);
-            this.Name = "MainForm";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
-            this.panelTop.ResumeLayout(false);
-            this.panelTop.PerformLayout();
-            this.panelBottom.ResumeLayout(false);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            Controls.Add(textBoxLog);
+            Controls.Add(panelBottom);
+            Controls.Add(panelTop);
+            Name = "MainForm";
+            FormClosing += MainForm_FormClosing;
+            FormClosed += MainForm_FormClosed;
+            Load += MainForm_Load;
+            Shown += MainForm_Shown;
+            panelTop.ResumeLayout(false);
+            panelTop.PerformLayout();
+            panelBottom.ResumeLayout(false);
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
