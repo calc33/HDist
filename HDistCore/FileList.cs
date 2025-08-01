@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -61,10 +63,11 @@ namespace HDist.Core
             _requestHeaders.AddRange(headers);
         }
 
+        private byte[]? _checksum;
         /// <summary>
         /// _checksum.sha のSHA1チェックサム値
         /// </summary>
-        public byte[] Checksum { get; }
+        public byte[] Checksum { get { return _checksum ?? throw new ApplicationException("Checksum is not initialized."); } }
         private readonly List<FileEntry> _list = new();
         private Dictionary<string, FileEntry>? _nameToEntry = null;
         private readonly Lock _nameToEntryLock = new();
@@ -140,33 +143,6 @@ namespace HDist.Core
             }
             return null;
         }
-
-        //public void SaveChecksum()
-        //{
-        //    string path = Path.Combine(BaseUri, CHECKSUM_FILE);
-        //    SaveToFile(path);
-        //}
-
-        //public void SaveToFile(string filename)
-        //{
-        //    string path = Path.GetTempFileName();
-        //    using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-        //    {
-        //        SaveToStream(stream);
-        //    }
-        //    File.Delete(filename);
-        //    File.Move(path, filename);
-        //    FileAttributes attr = File.GetAttributes(filename);
-        //    File.SetAttributes(filename, attr | FileAttributes.Hidden);
-        //}
-        //public void SaveToStream(Stream stream)
-        //{
-        //    using StreamWriter writer = new(stream, FileEncoding);
-        //    foreach (FileEntry entry in _list)
-        //    {
-        //        entry.Write(writer);
-        //    }
-        //}
 
         public static bool IsDisabled(string destinationDirectory)
         {
@@ -324,13 +300,58 @@ namespace HDist.Core
             }
         }
 
-        internal FileList(string baseUri, string checksumPath, string destinationDir)
+        private static bool TrySplitHeader(string header, out string name, out string value)
         {
-            _baseUri = new Uri(baseUri, UriKind.Absolute);
-            ChecksumFileName = checksumPath;
-            DestinationDirectory = destinationDir;
+            int pos = header.IndexOf(':');
+            if (pos < 0)
+            {
+                name = header;
+                value = string.Empty;
+                return false;
+            }
+            name = header.Substring(0, pos).Trim();
+            value = header.Substring(pos + 1).Trim();
+            return true;
+        }
+
+        private HttpClient? _httpClient;
+        internal HttpClient RequireClient()
+        {
+            if (_httpClient == null)
+            {
+                _httpClient = new HttpClient();
+                _httpClient.Timeout = TimeSpan.FromSeconds(30);
+                _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                foreach (string s in _requestHeaders)
+                {
+                    if (TrySplitHeader(s, out string name, out string value))
+                    {
+                        _httpClient.DefaultRequestHeaders.Add(name, value);
+                    }
+                }
+            }
+            return _httpClient;
+        }
+
+        private async Task<Stream> OpenChecksumStreamAsync()
+        {
+            Uri uri = new Uri(_baseUri, ChecksumFileName);
+            if (uri.IsFile)
+            {
+                return new FileStream(uri.AbsolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            }
+            HttpClient client = RequireClient();
+            HttpResponseMessage response = await client.GetAsync(uri);
+            MemoryStream stream = new();
+            await response.Content.CopyToAsync(stream);
+            stream.Position = 0;
+            return stream;
+        }
+
+        private void LoadEntries(Stream checksumStream)
+        {
             int line = 1;
-            using (StreamReader reader = new(checksumPath, FileEncoding))
+            using (StreamReader reader = new(checksumStream, FileEncoding, leaveOpen: true))
             {
                 while (!reader.EndOfStream)
                 {
@@ -354,15 +375,25 @@ namespace HDist.Core
                             _list.Add(new FileEntry(this, strs[2], strs[0], len));
                             break;
                         default:
-                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, checksumPath, line.ToString()));
+                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, CHECKSUM_FILE, line.ToString()));
                             break;
                     }
                 }
             }
             InvalidateNameToEntry();
             SHA1 sha = SHA1.Create();
-            using FileStream stream = new(checksumPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            Checksum = sha.ComputeHash(stream);
+            checksumStream.Position = 0;
+            //using FileStream stream = new(ChecksumFileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            _checksum = sha.ComputeHash(checksumStream);
+        }
+
+        internal FileList(string baseUri, string destinationDir, string? compressDir, IEnumerable<string> requestHeaders)
+        {
+            _baseUri = new Uri(baseUri, UriKind.Absolute);
+            ChecksumFileName = CHECKSUM_FILE;
+            DestinationDirectory = destinationDir;
+            CompressedDirectory = compressDir;
+            AddRequestHeaders(requestHeaders);
         }
 
         public string GetFullUri(string filename)
@@ -383,20 +414,12 @@ namespace HDist.Core
             return sourceUri + "/" + filename;
         }
 
-        public static FileList LoadChecksum(string sourceUri, string? compressDirectory, string destinationDirectory)
+        public async Task LoadEntriesAsync()
         {
-            return LoadFromFile(sourceUri, CombineUri(sourceUri, CHECKSUM_FILE), compressDirectory, destinationDirectory);
-        }
-        public static FileList LoadFromFile(string sourceUri, string filename, string? compressDirectory, string destinationDirectory)
-        {
-            if (!File.Exists(filename))
+            using (Stream stream = await OpenChecksumStreamAsync())
             {
-                throw new ApplicationException(string.Format(Properties.Resources0.ErrorChecksumNotFound, Path.GetDirectoryName(filename), Path.GetFileName(filename)));
+                LoadEntries(stream);
             }
-            return new FileList(sourceUri, filename, destinationDirectory)
-            {
-                CompressedDirectory = compressDirectory,
-            };
         }
 
         #region IEnumerable<FileEntry>

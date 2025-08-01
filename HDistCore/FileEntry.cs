@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace HDist.Core
             public string? Checksum { get; set; }
             public long Size { get; set; }
 
-            public string? GetChecksum(string directory)
+            public string? GetLocalChecksum(string directory)
             {
                 string path = Path.Combine(directory, FileName);
                 if (!File.Exists(path))
@@ -61,7 +60,7 @@ namespace HDist.Core
 
             public bool IsModified(string directory)
             {
-                return (Size != -1 && Size != GetSize(directory, FileName)) || Checksum != GetChecksum(directory);
+                return (Size != -1 && Size != GetSize(directory, FileName)) || Checksum != GetLocalChecksum(directory);
             }
 
             private const string CompressExtenstion = ".bz2";
@@ -95,38 +94,6 @@ namespace HDist.Core
                 return !mod;
             }
 
-            private static bool TrySplitHeader(string header, out string name, out string value)
-            {
-                int pos = header.IndexOf(':');
-                if (pos < 0)
-                {
-                    name = header;
-                    value = string.Empty;
-                    return false;
-                }
-                name = header.Substring(0, pos).Trim();
-                value = header.Substring(pos + 1).Trim();
-                return true;
-            }
-            private HttpClient? _httpClient;
-            private HttpClient RequireClient()
-            {
-                if (_httpClient == null)
-                {
-                    _httpClient = new HttpClient();
-                    _httpClient.Timeout = TimeSpan.FromSeconds(30);
-                    _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                    foreach (string s in _owner._requestHeaders)
-                    {
-                        if (TrySplitHeader(s, out string name, out string value))
-                        {
-                            _httpClient.DefaultRequestHeaders.Add(name, value);
-                        }
-                    }
-                }
-                return _httpClient;
-            }
-
             private async Task CopyFileAsync(string src, string dest)
             {
                 if (_owner.IsFileUri)
@@ -134,7 +101,7 @@ namespace HDist.Core
                     await Task.Run(() => File.Copy(src, dest, true));
                     return;
                 }
-                HttpClient client = RequireClient();
+                HttpClient client = _owner.RequireClient();
                 HttpResponseMessage response = await client.GetAsync(src);
                 HttpContent content = response.Content;
                 if (!response.IsSuccessStatusCode)
@@ -210,14 +177,6 @@ namespace HDist.Core
                 FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseUri, filename) : filename;
                 Checksum = checksum;
                 Size = size;
-            }
-
-            public FileEntry(FileList owner, string filename)
-            {
-                _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseUri, filename) : filename;
-                Checksum = GetChecksum(_owner.BaseUri);
-                Size = GetSize(_owner.BaseUri, FileName);
             }
 
             public int CompareTo(object? obj)

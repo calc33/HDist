@@ -174,9 +174,9 @@ namespace HCopy
                     Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
                     return;
                 }
-                FileList list = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
-                list.AddRequestHeaders(_requestHeaders);
+                FileList list = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
                 list.Log += Checksum_Log;
+                await list.LoadEntriesAsync();
                 list.WaitUnlocked(WaitFile);
                 await list.UpdateFilesAsync();
             }

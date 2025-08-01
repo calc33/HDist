@@ -528,6 +528,7 @@ namespace HCopy
                 return;
             }
             StartThread();
+            await _executingFileList.LoadEntriesAsync();
             await _executingFileList.UpdateFilesAsync();
             EndThread();
         }
@@ -550,8 +551,7 @@ namespace HCopy
                 }
                 try
                 {
-                    _executingFileList = FileList.LoadChecksum(SourceUri, CompressDir, DestinationDir);
-                    _executingFileList.AddRequestHeaders(_requestHeaders);
+                    _executingFileList = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
                 }
                 catch (ApplicationException t)
                 {
