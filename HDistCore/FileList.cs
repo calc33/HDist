@@ -319,8 +319,15 @@ namespace HDist.Core
         {
             if (_httpClient == null)
             {
-                _httpClient = new HttpClient();
-                _httpClient.Timeout = TimeSpan.FromSeconds(30);
+                HttpClientHandler handler = new()
+                {
+                    AllowAutoRedirect = true,
+                    AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate
+                };
+                _httpClient = new HttpClient(handler)
+                {
+                    Timeout = TimeSpan.FromSeconds(30)
+                };
                 _httpClient.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
                 foreach (string s in _requestHeaders)
                 {
@@ -335,7 +342,7 @@ namespace HDist.Core
 
         private async Task<Stream> OpenChecksumStreamAsync()
         {
-            Uri uri = new Uri(_baseUri, ChecksumFileName);
+            Uri uri = new(_baseUri, ChecksumFileName);
             if (uri.IsFile)
             {
                 return new FileStream(uri.AbsolutePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
