@@ -119,7 +119,7 @@ namespace HCopy
                             break;
                         case "--header-file":
                             i++;
-                            using (StreamReader reader = new StreamReader(args[i], Encoding.UTF8))
+                            using (StreamReader reader = new(args[i], Encoding.UTF8))
                             {
                                 for (string? s = reader.ReadLine(); s != null; s = reader.ReadLine())
                                 {
