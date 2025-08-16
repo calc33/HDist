@@ -175,6 +175,7 @@ namespace HCopy
                     return;
                 }
                 FileList list = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
+                list.TryRunShadowCopy();
                 list.Log += Checksum_Log;
                 await list.LoadEntriesAsync();
                 list.WaitUnlocked(WaitFile);

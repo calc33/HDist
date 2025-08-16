@@ -552,6 +552,7 @@ namespace HCopy
                 try
                 {
                     _executingFileList = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
+                    _executingFileList.TryRunShadowCopy();
                 }
                 catch (ApplicationException t)
                 {

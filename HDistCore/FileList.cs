@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -32,9 +34,17 @@ namespace HDist.Core
             }
         }
 
+        private static string CurrentDirectoryPrefix = "." + Path.DirectorySeparatorChar;
+        private static string ParentDirectoryPrefix = ".." + Path.DirectorySeparatorChar;
+
         private static string Treat(string value)
         {
-            return (_ignoreCase && !string.IsNullOrEmpty(value)) ? value.ToLower() : value;
+            string s = value;
+            if (s.StartsWith(CurrentDirectoryPrefix))
+            {
+                s = s.Substring(CurrentDirectoryPrefix.Length);
+            }
+            return (_ignoreCase && !string.IsNullOrEmpty(s)) ? s.ToLower() : s;
         }
 
         public Encoding FileEncoding { get; set; } = Encoding.UTF8;
@@ -125,24 +135,34 @@ namespace HDist.Core
             }
         }
 
+
         public FileEntry? FindEntry(string filename)
         {
-            if (RequireNameToEntry().TryGetValue(Treat(filename), out FileEntry? entry))
+            string path = filename;
+            if (Path.IsPathRooted(filename))
             {
-                return entry;
+                path = Path.GetRelativePath(DestinationDirectory, filename);
+                if (path.StartsWith(ParentDirectoryPrefix))
+                {
+                    return null;
+                }
             }
-            return null;
-        }
-
-        public FileEntry? FindEntry(string targetDirectory, string filename)
-        {
-            string path = Path.GetRelativePath(targetDirectory, filename);
             if (RequireNameToEntry().TryGetValue(Treat(path), out FileEntry? entry))
             {
                 return entry;
             }
             return null;
         }
+
+        //public FileEntry? FindEntry(string targetDirectory, string filename)
+        //{
+        //    string path = Path.GetRelativePath(targetDirectory, filename);
+        //    if (RequireNameToEntry().TryGetValue(Treat(path), out FileEntry? entry))
+        //    {
+        //        return entry;
+        //    }
+        //    return null;
+        //}
 
         public static bool IsDisabled(string destinationDirectory)
         {
@@ -159,6 +179,36 @@ namespace HDist.Core
             }
             return (s == "-" || s == "noupdate");
         }
+
+        //public bool HasUpdatedFile(string[] files)
+        //{
+        //    foreach (string s in files)
+        //    {
+        //        FileEntry? entry = FindEntry(s);
+        //        if (entry == null)
+        //        {
+        //            continue;
+        //        }
+        //        if (!entry.IsModified(DestinationDirectory))
+        //        {
+        //            return;
+        //        }
+        //        if (_pausing)
+        //        {
+        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Paused, null, null));
+        //            while (_pausing && !_aborting)
+        //            {
+        //                Thread.Sleep(100);
+        //            }
+        //        }
+        //        if (_aborting)
+        //        {
+        //            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.Aborted, null, null));
+        //            break;
+        //        }
+        //    }
+
+        //}
 
         public async Task UpdateFilesAsync()
         {
@@ -246,6 +296,64 @@ namespace HDist.Core
                     break;
                 }
             }
+        }
+
+        public string[]? GetShadowCopyFiles()
+        {
+            bool modified = false;
+            List<string> list = new();
+            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                FileEntry? entry = FindEntry(asm.Location);
+                if (entry != null)
+                {
+                    list.Add(entry.FileName);
+                    if (entry.IsModified(DestinationDirectory))
+                    {
+                        modified = true;
+                    }
+                }
+            }
+            return modified ? list.ToArray() : null;
+        }
+
+        /// <summary>
+        /// hcopy.exe/HCopyW.exe自身もしくは関連するDLLが変更されている場合は
+        /// 一時フォルダにhcopy.exe/HCopyW.exeと関連アセンブリのコピーを作成して実行する
+        /// 変更されている場合このプログラムは強制終了する
+        /// </summary>
+        /// <returns>
+        /// シャドウコピーを実行しなかった場合はfalseを返す。
+        /// シャドウコピーを実行した場合はプログラムを終了するのでtrueが返ることはない。
+        /// </returns>
+        public bool TryRunShadowCopy()
+        {
+            string[]? files = GetShadowCopyFiles();
+            if (files == null)
+            {
+                return false;
+            }
+            string tempDir = Path.GetTempFileName();
+            File.Delete(tempDir);
+            Directory.CreateDirectory(tempDir);
+            foreach (string f in files)
+            {
+                string src = Path.Combine(DestinationDirectory, f);
+                string dest = Path.Combine(tempDir, f);
+                string? destDir = Path.GetDirectoryName(dest);
+                if (destDir != null && !Directory.Exists(destDir))
+                {
+                    Directory.CreateDirectory(destDir);
+                }
+                File.Copy(src, dest);
+            }
+            string exePath = Assembly.GetExecutingAssembly().Location;
+            exePath = Path.Combine(tempDir, Path.GetRelativePath(DestinationDirectory, exePath));
+            Process process = Process.GetCurrentProcess();
+            process.StartInfo.FileName = exePath;
+            process.Start();
+            Environment.Exit(0);
+            return true;
         }
 
         public void Abort()
