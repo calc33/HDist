@@ -45,7 +45,8 @@ namespace HDist.Core
             return false;
         }
 
-        private static readonly string[] PreCopyFiles = new string[] { "hcopy.exe", "HCopyW.exe", "hcopy.dll", "hcopy.deps.json", "hcopy.runtimeconfig.json", "hdist.dll", "ICSharpCode.SharpZipLib.dll" };
+        private static readonly string[] PreCopyFiles = new string[] { "hcopy.deps.json", "hcopy.dll", "hcopy.exe", "hcopy.runtimeconfig.json", "ICSharpCode.SharpZipLib.dll", "ja\\hcopy.resources.dll" };
+        private static readonly string[] PreCopyFilesW = new string[] { "HCopyW.deps.json", "HCopyW.dll", "HCopyW.exe", "HCopyW.runtimeconfig.json", "ICSharpCode.SharpZipLib.dll", "ja\\HCopyW.resources.dll" };
         private const string HCopy_exe = "hcopy.exe";
         private const string HCopyW_exe = "HCopyW.exe";
 
@@ -88,10 +89,10 @@ namespace HDist.Core
             return buf.ToString();
         }
 
-        private async Task RunProcessAsync(string hcopyExe, bool restart)
+        private async Task RunProcessAsync(string hcopyExe, string[] preCopyFiles, bool restart)
         {
             // hcopy.exe/HCopyW.exeと関連ファイルは事前にコピー
-            await UpdateFilesAsync(PreCopyFiles);
+            await UpdateFilesAsync(preCopyFiles);
             string? exe = GetExecuatblePath(DestinationDirectory, hcopyExe);
             if (string.IsNullOrEmpty(exe))
             {
@@ -120,7 +121,7 @@ namespace HDist.Core
         /// <param name="restart"></param>
         public void RunHCopy(bool restart)
         {
-            _ = RunProcessAsync(HCopy_exe, restart);
+            _ = RunProcessAsync(HCopy_exe, PreCopyFiles, restart);
         }
 
         /// <summary>
@@ -132,7 +133,7 @@ namespace HDist.Core
         /// <param name="restart"></param>
         public void RunHCopyW(bool restart)
         {
-            _ = RunProcessAsync(HCopyW_exe, restart);
+            _ = RunProcessAsync(HCopyW_exe, PreCopyFilesW, restart);
         }
     }
 }

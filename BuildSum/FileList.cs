@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,22 +14,29 @@ namespace BuildSum
 {
     public partial class FileList: IEnumerable<FileList.FileEntry>
     {
-        private const string CHECKSUM_FILE = "_checksum.sha";
-        //private const string UPDATED_FILE = "_updated";
-        private static StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
-        private static bool _ignoreCase = true;
-        public static bool IgnoreCase
+        private const string INDEX_FILE = "_index.sha";
+        private static bool IsCaseInsensitiveOS()
         {
-            get
-            {
-                return _ignoreCase;
-            }
-            set
-            {
-                _ignoreCase = value;
-                FileNameComparison = _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-            }
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         }
+        private static StringComparison GetFileNameComparison(bool ignoreCase)
+        {
+            return ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        }
+        private static StringComparison FileNameComparison = GetFileNameComparison(IsCaseInsensitiveOS());
+        private static bool _ignoreCase = IsCaseInsensitiveOS();
+        //public static bool IgnoreCase
+        //{
+        //    get
+        //    {
+        //        return _ignoreCase;
+        //    }
+        //    set
+        //    {
+        //        _ignoreCase = value;
+        //        FileNameComparison = GetFileNameComparison(_ignoreCase);
+        //    }
+        //}
 
         private static string Treat(string value)
         {
@@ -36,14 +44,9 @@ namespace BuildSum
         }
 
         public Encoding FileEncoding { get; set; } = Encoding.UTF8;
-
-        public string? ChecksumFileName { get; set; }
         public string BaseDirectory { get; set; }
         public string? CompressedDirectory { get; set; }
-        /// <summary>
-        /// _checksum.sha のSHA1チェックサム値
-        /// </summary>
-        public byte[] Checksum { get; }
+
         private readonly List<FileEntry> _list = new();
         private Dictionary<string, FileEntry>? _nameToEntry = null;
         private readonly Lock _nameToEntryLock = new();
@@ -76,13 +79,6 @@ namespace BuildSum
                 _nameToEntry = null;
             }
         }
-
-        private bool _aborting = false;
-        private bool _pausing = false;
-        
-        public bool Aborting { get { return _aborting; } }
-        
-        public bool Pausing { get { return _pausing; } }
 
         public event EventHandler<LogEventArgs>? Log;
 
@@ -120,25 +116,25 @@ namespace BuildSum
             return null;
         }
 
-        public void SaveChecksum()
+        public void SaveIndex()
         {
-            string path = Path.Combine(BaseDirectory, CHECKSUM_FILE);
-            SaveToFile(path);
+            string path = Path.Combine(BaseDirectory, INDEX_FILE);
+            SaveIndexToFile(path);
         }
 
-        public void SaveToFile(string filename)
+        public void SaveIndexToFile(string filename)
         {
             string path = Path.GetTempFileName();
             using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             {
-                SaveToStream(stream);
+                SaveIndexToStream(stream);
             }
             File.Delete(filename);
             File.Move(path, filename);
             FileAttributes attr = File.GetAttributes(filename);
             File.SetAttributes(filename, attr | FileAttributes.Hidden);
         }
-        public void SaveToStream(Stream stream)
+        public void SaveIndexToStream(Stream stream)
         {
             OnLog(new LogEventArgs(LogStatus.Information, LogCategory.UpdatingChecksum, null, null));
             using StreamWriter writer = new(stream, FileEncoding);
@@ -190,27 +186,36 @@ namespace BuildSum
             InvalidateNameToEntry();
         }
 
+        /// <summary>
+        /// ワイルドカード表現を正規表現に変換
+        /// </summary>
+        /// <param name="wildcard"></param>
+        /// <returns></returns>
         private static Regex ToRegex(string wildcard)
         {
             StringBuilder buf = new();
-            buf.Append('^');
+            buf.Append("(^|[/\\]");
             foreach (char c in wildcard)
             {
                 switch (c)
                 {
                     case '*':
-                        buf.Append(".*");
+                        buf.Append("[^/\\]*");
                         break;
                     case '?':
-                        buf.Append('.');
+                        buf.Append("[^/\\]");
                         break;
                     case '$':
                     case '(':
+                    case ')':
                     case '+':
                     case '.':
+                    case '=':
                     case '[':
+                    case '\\':
                     case '^':
                     case '{':
+                    case '|':
                         buf.Append('\\');
                         buf.Append(c);
                         break;
@@ -219,23 +224,21 @@ namespace BuildSum
                         break;
                 }
             }
-            buf.Append('$');
+            buf.Append("($|[^/\\])");
             return new Regex(buf.ToString());
         }
 
         internal FileList(string baseDir, IList<string> ignoreNames, bool ignoreHidden, string? compressDir)
         {
-            ChecksumFileName = null;
             BaseDirectory = baseDir;
             List<Regex> ignores = new(ignoreNames.Count);
             foreach (string s in ignoreNames)
             {
                 ignores.Add(ToRegex(s));
             }
-            ignores.Add(ToRegex(CHECKSUM_FILE));
+            ignores.Add(ToRegex(INDEX_FILE));
             EnumFiles(baseDir, ignores, ignoreHidden);
             _list.Sort();
-            Checksum = [];
             CompressedDirectory = compressDir;
         }
 

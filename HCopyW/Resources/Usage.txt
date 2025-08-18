@@ -1,5 +1,9 @@
 HCopyW <source-uri> <destination-dir> [options]
-HCopyW copies files from <source-uri> listed in "_checksum.sha".
+
+HCopyW copies files from <source-uri> to <destination-dir>.
+The files to copy are listed in "_index.sha" in <source-uri>.
+"_index.sha" contains each file's SHA256 hash, file size, and file name.
+By only copying files that have changed, HCopyW speeds up the processing and reduces network load.
 
 Options:
   --wait <file>

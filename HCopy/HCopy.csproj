@@ -7,6 +7,7 @@
     <AssemblyName>hcopy</AssemblyName>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>

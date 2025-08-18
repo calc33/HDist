@@ -1,14 +1,18 @@
 BuildSum [<target-dir>] [options]
+
 BuildSumは<target-dir>で指定したディレクトリに含まれるファイルの
-SHA1チェックサム一覧を _checksum.sha という名前で生成する。
+SHA1チェックサム一覧を _index.sha という名前で生成する。
 <target-dir>を省略した場合はカレントディレクトリが対象
 
 Options:
   --compress <compress-dir>
   -c <compress-dir>
-      圧縮ファイルを格納するディレクトリ。
+      圧縮ファイルを格納するディレクトリ。ファイルはbzip2形式で圧縮される。
       圧縮ファイルを使うことでネットワークの負荷を軽減できる。
       相対パスで指定した場合は<target-dir>からの相対パスになる。
+      推奨設定値は"..\bzip2"
+      注: http(s)で配布する場合はhttpサーバーの圧縮通信機能を使って同等の機能を実現するため、
+          ここで圧縮ファイルを作成しても無視される。
 
   --ignore <name>
   -i <name>

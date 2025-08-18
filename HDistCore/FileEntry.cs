@@ -13,6 +13,7 @@ namespace HDist.Core
 {
     partial class FileList
     {
+        private const int HResult_SHARING_VIOLATION = unchecked((int)0x80070020);
         public class FileEntry : IComparable
         {
             private readonly FileList _owner;
@@ -39,15 +40,6 @@ namespace HDist.Core
                 return Convert.ToBase64String(sha.Hash);
             }
 
-            public static long GetSize(string path)
-            {
-                if (!File.Exists(path))
-                {
-                    return -1;
-                }
-                return new FileInfo(path).Length;
-            }
-
             public static long GetSize(string directory, string filename)
             {
                 string path = Path.Combine(directory, filename);
@@ -64,7 +56,7 @@ namespace HDist.Core
             }
 
             private const string CompressExtenstion = ".bz2";
-            private async Task<bool> ExtractFileAsync()
+            private async Task<bool> ExtractFileAsync(FileStream destStream)
             {
                 if (!_owner.IsFileUri || string.IsNullOrEmpty(_owner.CompressedDirectory))
                 {
@@ -82,7 +74,7 @@ namespace HDist.Core
                     using (FileStream srcStream = new(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                     {
                         string dest = Path.Combine(_owner.DestinationDirectory, FileName);
-                        using FileStream destStream = new(dest, FileMode.Create, FileAccess.Write, FileShare.None);
+                        //using FileStream destStream = new(dest, FileMode.Create, FileAccess.Write, FileShare.None);
                         BZip2.Decompress(srcStream, destStream, true);
                     }
                 });
@@ -94,11 +86,17 @@ namespace HDist.Core
                 return !mod;
             }
 
-            private async Task CopyFileAsync(string src, string dest)
+            private async Task CopyFileAsync(string src, string dest, FileStream destStream)
             {
                 if (_owner.IsFileUri)
                 {
-                    await Task.Run(() => File.Copy(src, dest, true));
+                    using (FileStream inStream = new(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        await inStream.CopyToAsync(destStream);
+                        //await Task.Run(() => File.Copy(src, dest, true));
+                        File.SetLastWriteTimeUtc(dest, File.GetLastWriteTime(src));
+                        //File.SetAttributes(dest, File.GetAttributes(src));
+                    }
                     return;
                 }
                 HttpClient client = _owner.RequireClient();
@@ -111,46 +109,68 @@ namespace HDist.Core
                 }
                 using (Stream inStream = await content.ReadAsStreamAsync())
                 {
-                    using (FileStream outStream = new(dest, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
-                    {
-                        inStream.CopyTo(outStream);
-                    }
-                }
-                DateTimeOffset? lastModified = content.Headers.LastModified;
-                if (lastModified.HasValue)
-                {
-                    File.SetLastWriteTimeUtc(dest, lastModified.Value.UtcDateTime);
-                }
-            }
-
-            private async Task CopyFileAsync()
-            {
-                string? src = _owner.GetFullUri(FileName);
-                string? dest = Path.Combine(_owner.DestinationDirectory, FileName);
-                string? destDir = Path.GetDirectoryName(dest);
-                if (!string.IsNullOrEmpty(destDir))
-                {
-                    Directory.CreateDirectory(destDir);
-                }
-                bool flag = false;
-                try
-                {
-                    flag = await ExtractFileAsync();
-                }
-                catch (Exception t)
-                {
-                    OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
-                }
-                if (!flag)
-                {
-                    OnLog(LogStatus.Information, LogCategory.Copy, null);
                     try
                     {
-                        await CopyFileAsync(src, dest);
+                        inStream.CopyTo(destStream);
                     }
                     catch (Exception t)
                     {
                         OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
+                        return;
+                    }
+                    DateTimeOffset? lastModified = content.Headers.LastModified;
+                    if (lastModified.HasValue)
+                    {
+                        File.SetLastWriteTimeUtc(dest, lastModified.Value.UtcDateTime);
+                    }
+                }
+            }
+
+            private static void CreateDirectoryForFile(string path)
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    return;
+                }
+                string? dir = Path.GetDirectoryName(path);
+                if (string.IsNullOrEmpty(dir))
+                {
+                    return;
+                }
+                if (Directory.Exists(dir))
+                {
+                    return;
+                }
+                Directory.CreateDirectory(dir);
+            }
+
+            private async Task CopyFileAsync(string destDir)
+            {
+                string? src = _owner.GetFullUri(FileName);
+                string? dest = Path.Combine(destDir, FileName);
+                CreateDirectoryForFile(dest);
+                using (FileStream destStream = new(dest, FileMode.Create, FileAccess.Write, FileShare.None))
+                {
+                    bool flag = false;
+                    try
+                    {
+                        flag = await ExtractFileAsync(destStream);
+                    }
+                    catch (Exception t)
+                    {
+                        OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
+                    }
+                    if (!flag)
+                    {
+                        OnLog(LogStatus.Information, LogCategory.Copy, null);
+                        try
+                        {
+                            await CopyFileAsync(src, dest, destStream);
+                        }
+                        catch (Exception t)
+                        {
+                            OnLog(LogStatus.Error, LogCategory.Exception, t.Message);
+                        }
                     }
                 }
             }
@@ -162,7 +182,21 @@ namespace HDist.Core
                 {
                     return;
                 }
-                await CopyFileAsync();
+                try
+                {
+                    try
+                    {
+                        await CopyFileAsync(_owner.DestinationDirectory);
+                    }
+                    catch (IOException e) when (e.HResult == HResult_SHARING_VIOLATION)
+                    {
+                        await CopyFileAsync(_owner.TemporaryDirectory);
+                    }
+                }
+                catch (Exception e)
+                {
+                    OnLog(LogStatus.Error, LogCategory.Exception, e.Message);
+                }
                 return;
             }
 

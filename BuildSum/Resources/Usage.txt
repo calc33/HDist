@@ -1,13 +1,18 @@
 BuildSum [<target-dir>] [options]
-BuildSum generates a SHA1 checksum named "_checksum.sha" from files in <target-dir>.
-If <target-dir> is omitted, use current directory.
+
+BuildSum generates a list of SHA1 checksums for the files in the directory specified by <target-dir>
+with the name "_index.sha".
+If <target-dir> is omitted, the current directory will be used.
 
 Options:
   --compress <compress-dir>
   -c <compress-dir>
-      Directory for storing compressed files.
+      Directory for storing compressed files. Files are compressed in bzip2 format.
       You can reduce the load on the network by using compressed files.
       If specified as a relative path, it will be a relative path from <target-dir>.
+      The recommended setting is "..\bzip2".
+      Note: When distributing via HTTP(s), the HTTP server's compression function is used to
+            achieve the same functionality, so creating compressed files here will be ignored.
 
   --ignore <name>
   -i <name>

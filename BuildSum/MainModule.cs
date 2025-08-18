@@ -143,7 +143,7 @@ namespace BuildSum
             }
             FileList list = FileList.CreateByDirectory(TargetDir, IgnoreFiles, IgnoreHidden, CompressDir);
             list.Log += FileList_Log;
-            list.SaveChecksum();
+            list.SaveIndex();
             list.CompressFiles();
         }
 

@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,10 +15,18 @@ namespace HDist.Core
 {
     public partial class FileList: IEnumerable<FileList.FileEntry>
     {
-        private const string CHECKSUM_FILE = "_checksum.sha";
+        private const string CHECKSUM_FILE = "_index.sha";
         private const string UPDATED_FILE = "_updated";
-        private static StringComparison FileNameComparison = StringComparison.OrdinalIgnoreCase;
-        private static bool _ignoreCase = true;
+        private static bool IsCaseInsensitiveOS()
+        {
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        }
+        private static StringComparison GetFileNameComparison(bool ignoreCase)
+        {
+            return ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        }
+        private static StringComparison FileNameComparison = GetFileNameComparison(IsCaseInsensitiveOS());
+        private static bool _ignoreCase = IsCaseInsensitiveOS();
         public static bool IgnoreCase
         {
             get
@@ -28,13 +36,23 @@ namespace HDist.Core
             set
             {
                 _ignoreCase = value;
-                FileNameComparison = _ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+                FileNameComparison = GetFileNameComparison(_ignoreCase);
             }
         }
 
         private static string Treat(string value)
         {
             return (_ignoreCase && !string.IsNullOrEmpty(value)) ? value.ToLower() : value;
+        }
+
+        private static string GetTemporaryDirectory()
+        {
+            string dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            if (!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            return dir;
         }
 
         public Encoding FileEncoding { get; set; } = Encoding.UTF8;
@@ -46,10 +64,26 @@ namespace HDist.Core
         public string BaseUri
         {
             get { return _baseUri.AbsoluteUri; }
-            set { _baseUri = new Uri(value, UriKind.Absolute); }
+            set
+            {
+                _baseUri = new Uri(value, UriKind.Absolute);
+                IgnoreCase = _baseUri.IsFile && IsCaseInsensitiveOS();
+            }
         }
         public string? CompressedDirectory { get; set; }
         public string DestinationDirectory { get; set; }
+        private string? _temporaryDirectory = null;
+        public string TemporaryDirectory
+        {
+            get
+            {
+                if (_temporaryDirectory == null)
+                {
+                    _temporaryDirectory = GetTemporaryDirectory();
+                }
+                return _temporaryDirectory;
+            }
+        }
 
         internal List<string> _requestHeaders = new();
 
@@ -65,7 +99,7 @@ namespace HDist.Core
 
         private byte[]? _checksum;
         /// <summary>
-        /// _checksum.sha のSHA1チェックサム値
+        /// _index.sha のSHA1チェックサム値
         /// </summary>
         public byte[] Checksum { get { return _checksum ?? throw new ApplicationException("Checksum is not initialized."); } }
         private readonly List<FileEntry> _list = new();
@@ -144,12 +178,12 @@ namespace HDist.Core
             return null;
         }
 
-        public static bool IsDisabled(string destinationDirectory)
+        private static string ReadUpdatedFile(string destinationDirectory)
         {
             string path = Path.Combine(destinationDirectory, UPDATED_FILE);
             if (string.IsNullOrEmpty(path) || !File.Exists(path))
             {
-                return false;
+                return string.Empty;
             }
             using StreamReader reader = new(path, Encoding.UTF8);
             string s = reader.ReadToEnd();
@@ -157,7 +191,27 @@ namespace HDist.Core
             {
                 s = s.TrimEnd();
             }
-            return (s == "-" || s == "noupdate");
+            return s;
+        }
+        private static readonly Dictionary<string, bool> DisabledMark = new() { { "-", true }, { "noupdate", true } };
+        public static bool IsDisabled(string destinationDirectory)
+        {
+            string s = ReadUpdatedFile(destinationDirectory);
+            return DisabledMark.ContainsKey(s);
+        }
+
+        /// <summary>
+        /// _index.sha のSHAチェックサム値が _updated ファイルに記録されている値と異なる場合に true を返す。
+        /// </summary>
+        /// <returns></returns>
+        public bool IsIndexModified()
+        {
+            string? s = ReadUpdatedFile(DestinationDirectory);
+            if (string.IsNullOrEmpty(s) || DisabledMark.ContainsKey(s))
+            {
+                return false;
+            }
+            return Convert.ToBase64String(Checksum) != s;
         }
 
         public async Task UpdateFilesAsync()
