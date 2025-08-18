@@ -326,7 +326,7 @@ namespace HDist.Core
         /// シャドウコピーを実行しなかった場合はfalseを返す。
         /// シャドウコピーを実行した場合はプログラムを終了するのでtrueが返ることはない。
         /// </returns>
-        public bool TryRunShadowCopy()
+        public bool TryRunShadowCopy(/*string[] filenames*/)
         {
             string[]? files = GetShadowCopyFiles();
             if (files == null)

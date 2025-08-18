@@ -1,10 +1,14 @@
 hcopy <source-uri> <destination-dir> [options]
-hcopy copies files from <source-uri> listed in "_checksum.sha".
+hcopy copies files from <source-uri> listed in "_index.sha".
 
 Options:
   --wait <file>
   -w <file>
       Wait for the <file> write lock to be released before starting copying.
+
+  --wait-process <process-id>
+  -W <process-id>
+      Wait until the process with PID <process-id> has finished before starting the copy.
 
   --run <executable>
   -r <executable>

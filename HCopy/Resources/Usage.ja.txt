@@ -1,10 +1,14 @@
 hcopy <source-uri> <destination-dir> [options]
-hcopyは<source-uri>から _checksum.sha に列挙されたファイルをコピーする。
+hcopyは<source-uri>から _index.sha に列挙されたファイルをコピーする。
 
 Options:
   --wait <file>
   -w <file>
       <file>の書き込みロックが解除されるまで待ってからコピーを開始する。
+
+  --wait-process <process-id>
+  -W <process-id>
+      PIDが<process-id>のプロセスが終了するまで待ってからコピーを開始する。
 
   --run <executable>
   -r <executable>

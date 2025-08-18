@@ -39,6 +39,8 @@ namespace HCopy
         private bool _umLogPosted = false;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        private readonly List<int> WaitPids = new();
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? WaitFile { get; set; }
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public string? RunFile { get; set; }
@@ -428,6 +430,18 @@ namespace HCopy
                             i++;
                             WaitFile = args[i];
                             break;
+                        case "--wait-process":
+                        case "-W":
+                            i++;
+                            if (!int.TryParse(args[i], out int pid))
+                            {
+                                Error(string.Format(Properties.Resources.ParameterRequiredNumberFmt, a));
+                            }
+                            else
+                            {
+                                WaitPids.Add(pid);
+                            }
+                            break;
                         case "--run":
                         case "-r":
                             i++;
@@ -548,6 +562,15 @@ namespace HCopy
                     Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
                     StartAutoQuit();
                     return;
+                }
+                foreach (int pid in WaitPids)
+                {
+                    try
+                    {
+                        Process p = Process.GetProcessById(pid);
+                        p.WaitForExit();
+                    }
+                    catch (ArgumentException) { }
                 }
                 try
                 {

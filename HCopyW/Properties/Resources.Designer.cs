@@ -295,22 +295,32 @@ namespace HCopy.Properties {
         }
         
         /// <summary>
-        ///   HCopyW &lt;source-dir&gt; &lt;destination-dir&gt; [options]
-        ///HCopyW copies files from &lt;source-dir&gt; listed in &quot;_checksum.sha&quot;.
+        ///   Numeric value is required following {0} に類似しているローカライズされた文字列を検索します。
+        /// </summary>
+        internal static string ParameterRequiredNumberFmt {
+            get {
+                return ResourceManager.GetString("ParameterRequiredNumberFmt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   HCopyW &lt;source-uri&gt; &lt;destination-dir&gt; [options]
+        ///HCopyW copies files from &lt;source-uri&gt; listed in &quot;_checksum.sha&quot;.
         ///
         ///Options:
         ///  --wait &lt;file&gt;
         ///  -w &lt;file&gt;
         ///      Wait for the &lt;file&gt; write lock to be released before starting copying.
         ///
+        ///  --wait-process &lt;process-id&gt;
+        ///  -W &lt;process-id&gt;
+        ///      Wait until the process with PID &lt;process-id&gt; has finished before starting the copy.
+        ///
         ///  --run &lt;executable&gt;
         ///  -r &lt;executable&gt;
         ///      Starts the program specified by &lt;executable&gt; after copying is completed.
         ///
-        ///  --param &lt;parameters&gt;
-        ///  -p &lt;parameters&gt;
-        ///      Specify the parameters for executing the program specified by --run.
-        ///      If there are multiple param [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
+        ///  --param [残りの文字列は切り詰められました]&quot;; に類似しているローカライズされた文字列を検索します。
         /// </summary>
         internal static string Usage {
             get {
