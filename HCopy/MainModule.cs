@@ -105,11 +105,9 @@ namespace HCopy
                             if (!int.TryParse(args[i], out int pid))
                             {
                                 Error(string.Format(Properties.Resources.ParameterRequiredNumberFmt, a));
+                                return;
                             }
-                            else
-                            {
-                                WaitPids.Add(pid);
-                            }
+                            WaitPids.Add(pid);
                             break;
                         case "--run":
                         case "-r":
@@ -152,6 +150,7 @@ namespace HCopy
                             if (a.StartsWith('-'))
                             {
                                 Error(string.Format(Properties.Resources.InvalidOptionFmt, a));
+                                return;
                             }
                             paths.Add(a);
                             break;
@@ -160,6 +159,7 @@ namespace HCopy
                 catch (IndexOutOfRangeException)
                 {
                     Error(string.Format(Properties.Resources.ParameterRequiedFmt, a));
+                    return;
                 }
             }
             switch (paths.Count)

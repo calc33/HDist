@@ -1,9 +1,9 @@
 $namespace="HCopy"
 
-$srcfile = "MainModule.Precopy.cs"
-$class = "MainModule"
+$srcfile = "MainForm.Precopy.cs"
+$class = "MainForm"
 $varname = "PreCopyFiles"
-$bindir = "bin\\Debug\\net9.0"
+$bindir = "bin\Debug\net9.0-windows10.0.22000.0"
 
 
 pushd $bindir

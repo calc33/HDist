@@ -17,7 +17,7 @@ namespace HDist.Core
 {
     public partial class FileList: IEnumerable<FileList.FileEntry>
     {
-        private const string CHECKSUM_FILE = "_index.sha";
+        private const string INDEX_FILE = "_index.sha";
         private const string UPDATED_FILE = "_updated";
         private static bool IsCaseInsensitiveOS()
         {
@@ -311,13 +311,15 @@ namespace HDist.Core
             }
         }
 
-        public string[]? GetShadowCopyFiles()
+        public string[]? GetShadowCopyFiles(string[] filenames)
         {
+            string exeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? Environment.CurrentDirectory;
             bool modified = false;
             List<string> list = new();
-            foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+            foreach (string filename in filenames)
             {
-                FileEntry? entry = FindEntry(asm.Location);
+                string path = Path.Combine(exeDir, filename);
+                FileEntry? entry = FindEntry(path);
                 if (entry != null)
                 {
                     list.Add(entry.FileName);
@@ -335,13 +337,20 @@ namespace HDist.Core
         /// 一時フォルダにhcopy.exe/HCopyW.exeと関連アセンブリのコピーを作成して実行する
         /// 変更されている場合このプログラムは強制終了する
         /// </summary>
+        /// <param name="filenames">
+        /// コピーするファイル名の配列。先頭はhcopy.exeもしくはHCopyW.exeのファイル名である必要がある。
+        /// </param>
         /// <returns>
         /// シャドウコピーを実行しなかった場合はfalseを返す。
         /// シャドウコピーを実行した場合はプログラムを終了するのでtrueが返ることはない。
         /// </returns>
-        public bool TryRunShadowCopy(/*string[] filenames*/)
+        public bool TryRunShadowCopy(string[] filenames)
         {
-            string[]? files = GetShadowCopyFiles();
+            if (filenames.Length == 0)
+            {
+                return false;
+            }
+            string[]? files = GetShadowCopyFiles(filenames);
             if (files == null)
             {
                 return false;
@@ -360,13 +369,14 @@ namespace HDist.Core
                 }
                 File.Copy(src, dest);
             }
-            string exePath = Assembly.GetExecutingAssembly().Location;
-            exePath = Path.Combine(tempDir, Path.GetRelativePath(DestinationDirectory, exePath));
-            Process process = Process.GetCurrentProcess();
-            process.StartInfo.FileName = exePath;
-            process.Start();
+            string exePath = Path.Combine(tempDir, Path.GetRelativePath(DestinationDirectory, filenames[0]));
+            List<string> cmdArgs = new(Environment.GetCommandLineArgs());
+            cmdArgs.RemoveAt(0); // Remove the executable name
+            cmdArgs.Add("--wait-process");
+            cmdArgs.Add(Environment.ProcessId.ToString());
+            Process.Start(exePath, cmdArgs);
             Environment.Exit(0);
-            return true;
+            return true;    // This line will never be reached, as the process will exit.
         }
 
         public void Abort()
@@ -503,7 +513,7 @@ namespace HDist.Core
                             _list.Add(new FileEntry(this, strs[2], strs[0], len));
                             break;
                         default:
-                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, CHECKSUM_FILE, line.ToString()));
+                            OnLog(new LogEventArgs(LogStatus.Error, LogCategory.InvalidChecksumEntry, INDEX_FILE, line.ToString()));
                             break;
                     }
                 }
@@ -518,7 +528,7 @@ namespace HDist.Core
         internal FileList(string baseUri, string destinationDir, string? compressDir, IEnumerable<string> requestHeaders)
         {
             _baseUri = new Uri(baseUri, UriKind.Absolute);
-            ChecksumFileName = CHECKSUM_FILE;
+            ChecksumFileName = INDEX_FILE;
             DestinationDirectory = destinationDir;
             CompressedDirectory = compressDir;
             AddRequestHeaders(requestHeaders);

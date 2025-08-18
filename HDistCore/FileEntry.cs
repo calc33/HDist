@@ -18,6 +18,13 @@ namespace HDist.Core
         {
             private readonly FileList _owner;
             public string FileName { get; set; }
+            public string FileNameWeb
+            {
+                get
+                {
+                    return (Path.DirectorySeparatorChar != '/') ? FileName.Replace(Path.DirectorySeparatorChar, '/') : FileName;
+                }
+            }
             public string? Checksum { get; set; }
             public long Size { get; set; }
 
@@ -146,7 +153,7 @@ namespace HDist.Core
 
             private async Task CopyFileAsync(string destDir)
             {
-                string? src = _owner.GetFullUri(FileName);
+                string? src = _owner.GetFullUri(FileNameWeb);
                 string? dest = Path.Combine(destDir, FileName);
                 CreateDirectoryForFile(dest);
                 using (FileStream destStream = new(dest, FileMode.Create, FileAccess.Write, FileShare.None))
@@ -205,10 +212,16 @@ namespace HDist.Core
                 _owner.OnLog(new LogEventArgs(status, category, FileName, message));
             }
 
+            private static string NormalizedFileName(string baseDirectory, string filename)
+            {
+                string path = Path.DirectorySeparatorChar != '/' ? filename.Replace('/', Path.DirectorySeparatorChar) : filename;
+                return Path.IsPathRooted(path) ? Path.GetRelativePath(baseDirectory, path) : path;
+            }
+
             public FileEntry(FileList owner, string filename, string checksum, long size)
             {
                 _owner = owner;
-                FileName = Path.IsPathRooted(filename) ? Path.GetRelativePath(_owner.BaseUri, filename) : filename;
+                FileName = NormalizedFileName(_owner.BaseUri, filename);
                 Checksum = checksum;
                 Size = size;
             }

@@ -15,6 +15,13 @@ namespace BuildSum
         {
             private readonly FileList _owner;
             public string FileName { get; set; }
+            public string FileNameWeb
+            {
+                get
+                {
+                    return (Path.DirectorySeparatorChar != '/') ? FileName.Replace(Path.DirectorySeparatorChar, '/') : FileName;
+                }
+            }
             public string? Checksum { get; set; }
             public long Size { get; set; }
 
@@ -56,7 +63,7 @@ namespace BuildSum
             public void Write(TextWriter writer)
             {
                 string s = SizeStr(GetSize(_owner.BaseDirectory, FileName));
-                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), s, FileName));
+                writer.WriteLine(string.Format("{0}\t{1}\t{2}", GetChecksum(_owner.BaseDirectory), s, FileNameWeb));
             }
 
             private const string CompressExtenstion = ".bz2";
