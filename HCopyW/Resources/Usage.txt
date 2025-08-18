@@ -10,6 +10,10 @@ Options:
   -w <file>
       Wait for the <file> write lock to be released before starting copying.
 
+  --wait-process <process-id>
+  -W <process-id>
+      Wait until the process with PID <process-id> has finished before starting the copy.
+
   --run <executable>
   -r <executable>
       Starts the program specified by <executable> after copying is completed.

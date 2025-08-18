@@ -11,8 +11,9 @@ using HDist.Core;
 
 namespace HCopy
 {
-    public class MainModule
+    public partial class MainModule
     {
+        private readonly List<int> WaitPids = new();
         private readonly string? WaitFile;
         private readonly string? RunFile;
         private readonly string? RunParam;
@@ -98,6 +99,18 @@ namespace HCopy
                             i++;
                             WaitFile = args[i];
                             break;
+                        case "--wait-process":
+                        case "-W":
+                            i++;
+                            if (!int.TryParse(args[i], out int pid))
+                            {
+                                Error(string.Format(Properties.Resources.ParameterRequiredNumberFmt, a));
+                            }
+                            else
+                            {
+                                WaitPids.Add(pid);
+                            }
+                            break;
                         case "--run":
                         case "-r":
                             i++;
@@ -174,7 +187,17 @@ namespace HCopy
                     Log(LogStatus.Information, LogCategory.SuppressUpdating, null, null);
                     return;
                 }
+                foreach (int pid in WaitPids)
+                {
+                    try
+                    {
+                        Process p = Process.GetProcessById(pid);
+                        await p.WaitForExitAsync();
+                    }
+                    catch (ArgumentException) { }
+                }
                 FileList list = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
+                list.TryRunShadowCopy();
                 list.Log += Checksum_Log;
                 await list.LoadEntriesAsync();
                 list.WaitUnlocked(WaitFile);

@@ -195,6 +195,9 @@
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>There is no parameter following {0}</value>
   </data>
+  <data name="ParameterRequiredNumberFmt" xml:space="preserve">
+    <value>Numeric value is required following {0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Usage.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>

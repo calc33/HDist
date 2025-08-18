@@ -10,6 +10,10 @@ Options:
   -w <file>
       <file>の書き込みロックが解除されるまで待ってからコピーを開始する。
 
+  --wait-process <process-id>
+  -W <process-id>
+      PIDが<process-id>のプロセスが終了するまで待ってからコピーを開始する。
+
   --run <executable>
   -r <executable>
       コピーの終了後に指定したプログラムを起動する。

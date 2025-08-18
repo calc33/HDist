@@ -123,6 +123,9 @@
   <data name="ParameterRequiedFmt" xml:space="preserve">
     <value>{0}に続くパラメータがありません</value>
   </data>
+  <data name="ParameterRequiredNumberFmt" xml:space="preserve">
+    <value>{0}に続くパラメータは数値です</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Usage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Usage.ja.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;shift_jis</value>
