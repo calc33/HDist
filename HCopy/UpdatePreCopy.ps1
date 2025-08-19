@@ -1,5 +1,6 @@
 $namespace="HCopy"
 
+$exename = "hcopy.exe"
 $srcfile = "MainModule.Precopy.cs"
 $class = "MainModule"
 $varname = "PreCopyFiles"
@@ -7,13 +8,15 @@ $bindir = "bin\\Debug\\net9.0"
 
 
 pushd $bindir
-
-$files = ""
+$indent = "`t`t`t"
+$files = $indent + """" + $exename + """"
 Get-ChildItem -Recurse -File | foreach {
   $f =  Resolve-Path  -Relative $_.FullName
   $f = $f -replace '^\.\\', ''
   $f = $f -replace '\\', '" + Path.DirectorySeparatorChar + "'
-  $files += "`r`n            """ + $f + ""","
+  if ($f -ne $exename) {
+	$files += ",`r`n" + $indent + """" + $f + """"
+  }
 }
 popd
 
@@ -24,12 +27,14 @@ using System.IO;
 
 namespace $namespace
 {
-    partial class $class
-    {
-        public static readonly string[] $varname = new string[]
-        {$files
-        };
-    }
+	partial class $class
+	{
+		public static readonly string[] $varname = new string[]
+		{
+			// first item must be ".exe"
+$files
+		};
+	}
 }
 "@
 echo $src | Out-File -FilePath $srcfile
