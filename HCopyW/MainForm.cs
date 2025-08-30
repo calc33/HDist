@@ -266,7 +266,7 @@ namespace HCopy
 
 		private void DelayedUpdateButtonText()
 		{
-			NativeMethods.PostMessage(Handle, UM_UPDATEBUTTON, IntPtr.Zero, IntPtr.Zero);
+			PostMsg(UM_UPDATEBUTTON);
 		}
 
 		private void OnEndThread()
