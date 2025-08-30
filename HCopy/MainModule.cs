@@ -198,7 +198,10 @@ namespace HCopy
 					catch (ArgumentException) { }
 				}
 				FileList list = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
-				list.TryRunShadowCopy(PreCopyFiles);
+				if (list.TryRunShadowCopy(PreCopyFiles))
+				{
+					return;
+				}
 				list.Log += Checksum_Log;
 				await list.LoadEntriesAsync();
 				list.WaitUnlocked(WaitFile);

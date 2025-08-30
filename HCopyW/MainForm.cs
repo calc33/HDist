@@ -574,7 +574,10 @@ namespace HCopy
 				try
 				{
 					_executingFileList = new(SourceUri, DestinationDir, CompressDir, _requestHeaders);
-					_executingFileList.TryRunShadowCopy(PreCopyFiles);
+					if (_executingFileList.TryRunShadowCopy(PreCopyFiles))
+					{
+						return;
+					}
 				}
 				catch (ApplicationException t)
 				{
